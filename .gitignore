@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Environment secrets
+.env
+.env.*
+!.env.example
+
+# Local database
+*.db
+
+# Angular build
+frontend/dist/
+frontend/.angular/
+
+# NestJS build
+backend/dist/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Operating system
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
