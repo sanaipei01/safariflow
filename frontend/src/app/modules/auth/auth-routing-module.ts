@@ -1,0 +1,16 @@
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { Login } from './login/login';
+import { Register } from './register/register';
+
+const routes: Routes = [
+  { path: '', pathMatch: 'full', redirectTo: 'login' },
+  { path: 'login', component: Login, title: 'Log in | SafariFlow' },
+  { path: 'register', component: Register, title: 'Register | SafariFlow' },
+];
+
+@NgModule({
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule],
+})
+export class AuthRoutingModule {}

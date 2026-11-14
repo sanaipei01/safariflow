@@ -1,0 +1,12 @@
+<header class="user-bar">
+  <div class="brand">
+    <strong>SafariFlow</strong>
+    <span class="area">{{ area() }}</span>
+  </div>
+  @if (auth.user(); as user) {
+    <div class="session">
+      <span>{{ user.name }} ({{ user.role }})</span>
+      <button type="button" class="btn btn-secondary" (click)="auth.logout()">Log out</button>
+    </div>
+  }
+</header>
