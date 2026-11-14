@@ -4,10 +4,12 @@
   --border: #d9dde3;
   --text: #1c2330;
   --text-muted: #5d6675;
-  --accent: #1f6f4a;
-  --accent-hover: #185a3c;
+  --accent: #0c7f74;
+  --accent-hover: #0a6a61;
   --danger: #b3261e;
   --danger-bg: #fdecea;
+  --brand-dark: #26323a;
+  --brand-light: #6dd3cb;
 }
 
 * {

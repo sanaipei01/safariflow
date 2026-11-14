@@ -11,8 +11,19 @@ import { PassengerLayout } from './layouts/passenger-layout/passenger-layout';
 
 const roles = (...allowed: Role[]) => ({ roles: allowed });
 
+/** Signed-in users start on their own home page, everyone else on the welcome page. */
+const redirectToStart = () => {
+  const auth = inject(AuthService);
+  return auth.isLoggedIn() ? auth.homeUrl() : '/welcome';
+};
+
 const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: () => inject(AuthService).homeUrl() },
+  { path: '', pathMatch: 'full', redirectTo: redirectToStart },
+  {
+    path: 'welcome',
+    canActivate: [guestGuard],
+    loadChildren: () => import('./modules/welcome/welcome-module').then((m) => m.WelcomeModule),
+  },
   {
     path: 'auth',
     component: AuthLayout,
