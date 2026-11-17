@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './modules/auth/auth.module';
+import { MatatusModule } from './modules/matatus/matatus.module';
+import { SaccosModule } from './modules/saccos/saccos.module';
 import { UsersModule } from './modules/users/users.module';
 
 @Module({
@@ -18,6 +20,8 @@ import { UsersModule } from './modules/users/users.module';
     }),
     UsersModule,
     AuthModule,
+    SaccosModule,
+    MatatusModule,
   ],
 })
 export class AppModule {}
