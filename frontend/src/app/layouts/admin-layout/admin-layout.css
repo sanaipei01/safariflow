@@ -1,3 +1,24 @@
+.admin-nav {
+  display: flex;
+  gap: 1.5rem;
+  padding: 0 1.5rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.admin-nav a {
+  padding: 0.75rem 0;
+  border-bottom: 2px solid transparent;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.admin-nav a.active {
+  border-bottom-color: var(--accent);
+  color: var(--text);
+}
+
 .content {
   padding: 1.5rem;
 }
