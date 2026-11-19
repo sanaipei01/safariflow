@@ -1,1 +1,123 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --bg: #f5f6f8;
+  --surface: #ffffff;
+  --border: #d9dde3;
+  --text: #1c2330;
+  --text-muted: #5d6675;
+  --accent: #0c7f74;
+  --accent-hover: #0a6a61;
+  --danger: #b3261e;
+  --danger-bg: #fdecea;
+  --brand-dark: #26323a;
+  --brand-light: #6dd3cb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  line-height: 1.5;
+}
+
+a {
+  color: var(--accent);
+}
+
+.form-field {
+  margin-bottom: 1rem;
+}
+
+.form-field label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.form-field input,
+.form-field select {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--surface);
+  color: inherit;
+  font: inherit;
+}
+
+.form-field input:focus-visible,
+.form-field select:focus-visible,
+.btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.field-error {
+  margin: 0.25rem 0 0;
+  color: var(--danger);
+  font-size: 0.8125rem;
+}
+
+.form-error {
+  margin: 0 0 1rem;
+  padding: 0.6rem 0.75rem;
+  background: var(--danger-bg);
+  border-radius: 0.5rem;
+  color: var(--danger);
+  font-size: 0.875rem;
+}
+
+.btn {
+  padding: 0.6rem 1rem;
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.btn-secondary {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.form-footer {
+  margin: 1rem 0 0;
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+h2 {
+  margin: 0 0 1rem;
+  font-size: 1.25rem;
+}

@@ -15,6 +15,7 @@ frontend/.angular/
 
 # NestJS build
 backend/dist/
+*.tsbuildinfo
 
 # Logs
 *.log
