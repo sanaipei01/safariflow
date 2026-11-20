@@ -1,0 +1,24 @@
+.stages {
+  min-width: 0;
+  margin: 0 0 1rem;
+  padding: 0;
+  border: none;
+}
+
+.stages legend {
+  margin-bottom: 0.5rem;
+  padding: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.stage-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.stage-row input {
+  flex: 1;
+  min-width: 0;
+}

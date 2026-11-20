@@ -14,6 +14,7 @@ interface NavItem {
 const NAV_ITEMS: readonly NavItem[] = [
   { label: 'Matatus', url: '/admin/matatus', icon: 'pi-car' },
   { label: 'Saccos', url: '/admin/saccos', icon: 'pi-building' },
+  { label: 'Routes', url: '/admin/routes', icon: 'pi-directions' },
   { label: 'Drivers', url: '/admin/drivers', icon: 'pi-users' },
 ];
 

@@ -59,7 +59,7 @@ describe('AdminLayout', () => {
     const links = Array.from(page.querySelectorAll('nav a')).map((link) =>
       link.textContent?.trim(),
     );
-    expect(links).toEqual(['Matatus', 'Saccos', 'Drivers']);
+    expect(links).toEqual(['Matatus', 'Saccos', 'Routes', 'Drivers']);
   });
 
   it('shows the open section and today in the top bar', async () => {

@@ -1,0 +1,60 @@
+<header class="page-header">
+  <p-button label="Add route" icon="pi pi-plus" (onClick)="openAdd()" />
+</header>
+
+@if (errorMessage(); as message) {
+  <p-message severity="error" role="alert">{{ message }}</p-message>
+}
+
+<p-table [value]="routes()" [loading]="loading()" [tableStyle]="{ 'min-width': '40rem' }">
+  <ng-template #header>
+    <tr>
+      <th>Route</th>
+      <th>Stages</th>
+      <th>Status</th>
+      <th><span class="visually-hidden">Actions</span></th>
+    </tr>
+  </ng-template>
+  <ng-template #body let-route>
+    <tr>
+      <td>
+        <strong>{{ route.name }}</strong>
+      </td>
+      <td>{{ stageSummary(route) }}</td>
+      <td>
+        <p-tag
+          [value]="route.isActive ? 'Active' : 'Inactive'"
+          [severity]="route.isActive ? 'success' : 'secondary'"
+        />
+      </td>
+      <td class="actions">
+        <p-button
+          label="Edit"
+          icon="pi pi-pencil"
+          severity="secondary"
+          [outlined]="true"
+          size="small"
+          [ariaLabel]="'Edit ' + route.name"
+          (onClick)="openEdit(route)"
+        />
+        <p-button
+          label="Delete"
+          icon="pi pi-trash"
+          severity="danger"
+          [outlined]="true"
+          size="small"
+          (onClick)="confirmRemove(route)"
+        />
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template #emptymessage>
+    <tr>
+      <td colspan="4">No routes found.</td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<app-route-form-dialog [(visible)]="dialogOpen" [route]="editing()" (saved)="load()" />
+
+<p-confirmdialog />
