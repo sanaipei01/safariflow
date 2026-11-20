@@ -1,7 +1,12 @@
 import { Transform } from 'class-transformer';
 
-/** Removes leading and trailing spaces from a string property before validation. */
+const trim = (value: unknown): unknown => {
+  if (typeof value === 'string') {
+    return value.trim();
+  }
+  return Array.isArray(value) ? value.map(trim) : value;
+};
+
+/** Removes leading and trailing spaces from a string, or from every string in a list. */
 export const Trim = () =>
-  Transform(({ value }: { value: unknown }) =>
-    typeof value === 'string' ? value.trim() : value,
-  );
+  Transform(({ value }: { value: unknown }) => trim(value));
