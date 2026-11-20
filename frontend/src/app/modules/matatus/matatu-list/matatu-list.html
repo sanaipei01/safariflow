@@ -1,0 +1,84 @@
+<header class="page-header">
+  <p-button label="Add matatu" icon="pi pi-plus" routerLink="new" />
+</header>
+
+<div class="filters">
+  <div class="field">
+    <label for="filter-sacco">Sacco</label>
+    <p-select
+      inputId="filter-sacco"
+      [options]="saccos()"
+      optionLabel="name"
+      optionValue="id"
+      placeholder="All Saccos"
+      [showClear]="true"
+      (onChange)="filterBySacco($event.value)"
+    />
+  </div>
+
+  <div class="field">
+    <label for="filter-status">Status</label>
+    <p-select
+      inputId="filter-status"
+      [options]="statusOptions"
+      optionLabel="label"
+      optionValue="value"
+      placeholder="All statuses"
+      [showClear]="true"
+      (onChange)="filterByStatus($event.value)"
+    />
+  </div>
+</div>
+
+@if (errorMessage(); as message) {
+  <p-message severity="error" role="alert">{{ message }}</p-message>
+}
+
+<p-table [value]="matatus()" [loading]="loading()" [tableStyle]="{ 'min-width': '40rem' }">
+  <ng-template #header>
+    <tr>
+      <th>Plate number</th>
+      <th>Sacco</th>
+      <th>Capacity</th>
+      <th>Status</th>
+      <th><span class="visually-hidden">Actions</span></th>
+    </tr>
+  </ng-template>
+  <ng-template #body let-matatu>
+    <tr>
+      <td>
+        <strong>{{ matatu.plateNumber }}</strong>
+      </td>
+      <td>{{ matatu.sacco.name }}</td>
+      <td>{{ matatu.capacity }} seats</td>
+      <td>
+        <p-tag [value]="matatu.status | titlecase" [severity]="severity(matatu.status)" />
+      </td>
+      <td class="actions">
+        <p-button
+          label="Edit"
+          icon="pi pi-pencil"
+          severity="secondary"
+          [outlined]="true"
+          size="small"
+          [routerLink]="[matatu.id, 'edit']"
+        />
+        <p-button
+          label="Delete"
+          icon="pi pi-trash"
+          severity="danger"
+          [outlined]="true"
+          size="small"
+          (onClick)="confirmRemove(matatu)"
+        />
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template #emptymessage>
+    <tr>
+      <td colspan="5">No matatus found.</td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<p-confirmdialog />

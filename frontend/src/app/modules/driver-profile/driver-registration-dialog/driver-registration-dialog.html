@@ -1,0 +1,269 @@
+<p-dialog
+  [header]="driver() ? 'Update your registration' : 'Driver registration'"
+  [modal]="true"
+  [draggable]="false"
+  [style]="{ width: '46rem' }"
+  [breakpoints]="{ '960px': '92vw' }"
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+>
+  <form id="driver-registration-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <p class="muted">
+      Fill in your own details and the details of your vehicle. An admin or operator will review
+      them. Fields marked <span class="required" aria-hidden="true">*</span> are required.
+    </p>
+
+    @if (errorMessage(); as message) {
+      <p-message severity="error" role="alert">{{ message }}</p-message>
+    }
+
+    <section class="form-section">
+      <h3>Personal details</h3>
+      <div class="form-grid">
+        <div class="field">
+          <label for="nationalId"
+            >National ID number <span class="required" aria-hidden="true">*</span></label
+          >
+          <input
+            pInputText
+            id="nationalId"
+            type="text"
+            formControlName="nationalId"
+            inputmode="numeric"
+            fluid
+          />
+          @if (showError(form.controls.nationalId)) {
+            <p-message severity="error" size="small" variant="simple" role="alert">
+              Enter your 7 or 8 digit national ID number.
+            </p-message>
+          }
+        </div>
+        <div class="field">
+          <label for="phone">Phone number <span class="required" aria-hidden="true">*</span></label>
+          <input pInputText id="phone" type="text" formControlName="phone" fluid />
+          @if (showError(form.controls.phone)) {
+            <p-message severity="error" size="small" variant="simple" role="alert">
+              Enter a Kenyan number such as 0712345678.
+            </p-message>
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="form-section">
+      <h3>Driving licence</h3>
+      <div class="form-grid">
+        <div class="field">
+          <label for="licenseNumber"
+            >Driving licence number <span class="required" aria-hidden="true">*</span></label
+          >
+          <input pInputText id="licenseNumber" type="text" formControlName="licenseNumber" fluid />
+          @if (showError(form.controls.licenseNumber)) {
+            <p-message severity="error" size="small" variant="simple" role="alert">
+              Enter your licence number (up to 30 characters).
+            </p-message>
+          }
+        </div>
+        <div class="field">
+          <label for="licenseExpiry"
+            >Licence expiry date <span class="required" aria-hidden="true">*</span></label
+          >
+          <p-datepicker
+            inputId="licenseExpiry"
+            formControlName="licenseExpiry"
+            [minDate]="today"
+            dateFormat="dd/mm/yy"
+            placeholder="dd/mm/yyyy"
+            [showIcon]="true"
+            fluid
+          />
+          @if (showError(form.controls.licenseExpiry)) {
+            <p-message severity="error" size="small" variant="simple" role="alert">
+              Choose a licence expiry date that has not passed.
+            </p-message>
+          }
+        </div>
+        <div class="field">
+          <label for="psvBadgeNumber"
+            >PSV badge number <span class="required" aria-hidden="true">*</span></label
+          >
+          <input
+            pInputText
+            id="psvBadgeNumber"
+            type="text"
+            formControlName="psvBadgeNumber"
+            fluid
+          />
+          @if (showError(form.controls.psvBadgeNumber)) {
+            <p-message severity="error" size="small" variant="simple" role="alert">
+              Enter your PSV badge number.
+            </p-message>
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="form-section">
+      <h3>Vehicle</h3>
+      <div class="form-grid">
+        <div class="field">
+          <label for="vehiclePlate"
+            >Registration plate <span class="required" aria-hidden="true">*</span></label
+          >
+          <input pInputText id="vehiclePlate" type="text" formControlName="vehiclePlate" fluid />
+          @if (showError(form.controls.vehiclePlate)) {
+            <p-message severity="error" size="small" variant="simple" role="alert">
+              Enter a plate such as KDA 123A.
+            </p-message>
+          }
+        </div>
+        <div class="field">
+          <label for="vehicleMake">Make <span class="required" aria-hidden="true">*</span></label>
+          <input pInputText id="vehicleMake" type="text" formControlName="vehicleMake" fluid />
+          @if (showError(form.controls.vehicleMake)) {
+            <p-message severity="error" size="small" variant="simple" role="alert">
+              Enter the make, for example Toyota.
+            </p-message>
+          }
+        </div>
+        <div class="field">
+          <label for="vehicleModel">Model <span class="required" aria-hidden="true">*</span></label>
+          <input pInputText id="vehicleModel" type="text" formControlName="vehicleModel" fluid />
+          @if (showError(form.controls.vehicleModel)) {
+            <p-message severity="error" size="small" variant="simple" role="alert">
+              Enter the model, for example HiAce.
+            </p-message>
+          }
+        </div>
+        <div class="field">
+          <label for="vehicleYear"
+            >Year of manufacture <span class="required" aria-hidden="true">*</span></label
+          >
+          <p-inputnumber
+            inputId="vehicleYear"
+            formControlName="vehicleYear"
+            [min]="oldestVehicleYear"
+            [max]="newestVehicleYear"
+            [useGrouping]="false"
+            fluid
+          />
+          @if (showError(form.controls.vehicleYear)) {
+            <p-message severity="error" size="small" variant="simple" role="alert">
+              Enter a year between 1990 and next year.
+            </p-message>
+          }
+        </div>
+        <div class="field">
+          <label for="vehicleCapacity"
+            >Number of seats <span class="required" aria-hidden="true">*</span></label
+          >
+          <p-inputnumber
+            inputId="vehicleCapacity"
+            formControlName="vehicleCapacity"
+            [min]="1"
+            [max]="70"
+            [useGrouping]="false"
+            fluid
+          />
+          @if (showError(form.controls.vehicleCapacity)) {
+            <p-message severity="error" size="small" variant="simple" role="alert">
+              Enter between 1 and 70 seats.
+            </p-message>
+          }
+        </div>
+        <div class="field">
+          <label for="insurancePolicyNumber"
+            >Insurance policy number <span class="required" aria-hidden="true">*</span></label
+          >
+          <input
+            pInputText
+            id="insurancePolicyNumber"
+            type="text"
+            formControlName="insurancePolicyNumber"
+            fluid
+          />
+          @if (showError(form.controls.insurancePolicyNumber)) {
+            <p-message severity="error" size="small" variant="simple" role="alert">
+              Enter your insurance policy number.
+            </p-message>
+          }
+        </div>
+        <div class="field">
+          <label for="insuranceExpiry"
+            >Insurance expiry date <span class="required" aria-hidden="true">*</span></label
+          >
+          <p-datepicker
+            inputId="insuranceExpiry"
+            formControlName="insuranceExpiry"
+            [minDate]="today"
+            dateFormat="dd/mm/yy"
+            placeholder="dd/mm/yyyy"
+            [showIcon]="true"
+            fluid
+          />
+          @if (showError(form.controls.insuranceExpiry)) {
+            <p-message severity="error" size="small" variant="simple" role="alert">
+              Choose an insurance expiry date that has not passed.
+            </p-message>
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="form-section">
+      <h3>Sacco (optional)</h3>
+      <p class="muted">Leave this empty if your vehicle does not belong to a Sacco.</p>
+      <div class="form-grid">
+        <div class="field">
+          <label for="saccoName">Sacco name</label>
+          <input pInputText id="saccoName" type="text" formControlName="saccoName" fluid />
+          @if (showError(form.controls.saccoName)) {
+            <p-message severity="error" size="small" variant="simple" role="alert">
+              Enter the Sacco name.
+            </p-message>
+          }
+        </div>
+        <div class="field">
+          <label for="saccoRegistrationNumber">Sacco registration number</label>
+          <input
+            pInputText
+            id="saccoRegistrationNumber"
+            type="text"
+            formControlName="saccoRegistrationNumber"
+            fluid
+          />
+          @if (showError(form.controls.saccoRegistrationNumber)) {
+            <p-message severity="error" size="small" variant="simple" role="alert">
+              Enter up to 50 characters.
+            </p-message>
+          }
+        </div>
+        <div class="field">
+          <label for="saccoPhone">Sacco phone number</label>
+          <input pInputText id="saccoPhone" type="text" formControlName="saccoPhone" fluid />
+          @if (showError(form.controls.saccoPhone)) {
+            <p-message severity="error" size="small" variant="simple" role="alert">
+              Enter a Kenyan number such as 0712345678.
+            </p-message>
+          }
+        </div>
+      </div>
+    </section>
+
+    @if (form.hasError('saccoNeedsName') && form.controls.saccoName.touched) {
+      <p-message severity="error" size="small" variant="simple" role="alert">
+        Enter the Sacco name to go with the other Sacco details.
+      </p-message>
+    }
+  </form>
+
+  <ng-template #footer>
+    <p-button label="Cancel" severity="secondary" [outlined]="true" (onClick)="close()" />
+    <p-button
+      [label]="saving() ? 'Sending...' : driver() ? 'Resubmit registration' : 'Submit registration'"
+      icon="pi pi-send"
+      [disabled]="saving()"
+      (onClick)="submit()"
+    />
+  </ng-template>
+</p-dialog>

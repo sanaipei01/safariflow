@@ -1,0 +1,93 @@
+<div class="details">
+  <section>
+    <h3>Personal details</h3>
+    <dl>
+      <div>
+        <dt>Full name</dt>
+        <dd>{{ driver().user.name }}</dd>
+      </div>
+      <div>
+        <dt>Email</dt>
+        <dd>{{ driver().user.email }}</dd>
+      </div>
+      <div>
+        <dt>Phone</dt>
+        <dd>{{ driver().phone }}</dd>
+      </div>
+      <div>
+        <dt>National ID</dt>
+        <dd>{{ driver().nationalId }}</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section>
+    <h3>Driving licence</h3>
+    <dl>
+      <div>
+        <dt>Licence number</dt>
+        <dd>{{ driver().licenseNumber }}</dd>
+      </div>
+      <div>
+        <dt>Licence expiry</dt>
+        <dd>{{ driver().licenseExpiry | date: 'd MMM y' }}</dd>
+      </div>
+      <div>
+        <dt>PSV badge number</dt>
+        <dd>{{ driver().psvBadgeNumber }}</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section>
+    <h3>Vehicle</h3>
+    <dl>
+      <div>
+        <dt>Registration plate</dt>
+        <dd>{{ driver().vehiclePlate }}</dd>
+      </div>
+      <div>
+        <dt>Make and model</dt>
+        <dd>{{ driver().vehicleMake }} {{ driver().vehicleModel }}</dd>
+      </div>
+      <div>
+        <dt>Year</dt>
+        <dd>{{ driver().vehicleYear }}</dd>
+      </div>
+      <div>
+        <dt>Seats</dt>
+        <dd>{{ driver().vehicleCapacity }}</dd>
+      </div>
+      <div>
+        <dt>Insurance policy</dt>
+        <dd>{{ driver().insurancePolicyNumber }}</dd>
+      </div>
+      <div>
+        <dt>Insurance expiry</dt>
+        <dd>{{ driver().insuranceExpiry | date: 'd MMM y' }}</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section>
+    <h3>Sacco</h3>
+    @if (driver().saccoName; as name) {
+      <dl>
+        <div>
+          <dt>Sacco name</dt>
+          <dd>{{ name }}</dd>
+        </div>
+        <div>
+          <dt>Registration number</dt>
+          <dd>{{ driver().saccoRegistrationNumber ?? 'Not given' }}</dd>
+        </div>
+        <div>
+          <dt>Sacco phone</dt>
+          <dd>{{ driver().saccoPhone ?? 'Not given' }}</dd>
+        </div>
+      </dl>
+    } @else {
+      <p class="muted">The driver did not name a Sacco.</p>
+    }
+  </section>
+</div>

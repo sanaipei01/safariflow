@@ -4,6 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing-module';
 import { App } from './app';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { primeNgProviders } from './core/theme/primeng';
 import { LayoutsModule } from './layouts/layouts-module';
 
 @NgModule({
@@ -11,6 +12,7 @@ import { LayoutsModule } from './layouts/layouts-module';
   imports: [BrowserModule, AppRoutingModule, LayoutsModule],
   providers: [
     provideBrowserGlobalErrorListeners(),
+    ...primeNgProviders,
     provideHttpClient(withInterceptors([authInterceptor])),
   ],
   bootstrap: [App],

@@ -1,0 +1,123 @@
+<p-dialog
+  [header]="route() ? 'Edit route' : 'Add route'"
+  [modal]="true"
+  [draggable]="false"
+  [style]="{ width: '34rem' }"
+  [breakpoints]="{ '960px': '92vw' }"
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+>
+  <form id="route-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <p class="muted">
+      Fields marked <span class="required" aria-hidden="true">*</span> are required.
+    </p>
+
+    @if (errorMessage(); as message) {
+      <p-message severity="error" role="alert">{{ message }}</p-message>
+    }
+
+    <div class="field">
+      <label for="name">Route name <span class="required" aria-hidden="true">*</span></label>
+      <input
+        pInputText
+        id="name"
+        type="text"
+        formControlName="name"
+        placeholder="Nairobi - Thika"
+        fluid
+      />
+      @if (form.controls.name.touched && form.controls.name.invalid) {
+        <p-message severity="error" size="small" variant="simple" role="alert">
+          Enter a route name.
+        </p-message>
+      }
+    </div>
+
+    <div class="field">
+      <label for="isActive">Status</label>
+      <p-select
+        inputId="isActive"
+        formControlName="isActive"
+        [options]="statusOptions"
+        optionLabel="label"
+        optionValue="value"
+        fluid
+      />
+    </div>
+
+    <fieldset class="stages">
+      <legend>
+        Stages, from origin to destination <span class="required" aria-hidden="true">*</span>
+      </legend>
+
+      @for (
+        stage of stages.controls;
+        track stage;
+        let i = $index;
+        let first = $first;
+        let last = $last
+      ) {
+        <div class="stage-row">
+          <input
+            pInputText
+            type="text"
+            [formControl]="stage"
+            [attr.aria-label]="'Stage ' + (i + 1)"
+            [placeholder]="first ? 'Origin' : last ? 'Destination' : 'Stage ' + (i + 1)"
+            fluid
+          />
+          <p-button
+            icon="pi pi-arrow-up"
+            severity="secondary"
+            [outlined]="true"
+            [ariaLabel]="'Move stage ' + (i + 1) + ' up'"
+            [disabled]="first"
+            (onClick)="moveStage(i, -1)"
+          />
+          <p-button
+            icon="pi pi-arrow-down"
+            severity="secondary"
+            [outlined]="true"
+            [ariaLabel]="'Move stage ' + (i + 1) + ' down'"
+            [disabled]="last"
+            (onClick)="moveStage(i, 1)"
+          />
+          <p-button
+            icon="pi pi-trash"
+            severity="danger"
+            [outlined]="true"
+            [ariaLabel]="'Remove stage ' + (i + 1)"
+            [disabled]="stages.length <= minStages"
+            (onClick)="removeStage(i)"
+          />
+        </div>
+      }
+
+      @if (stages.touched && stages.invalid) {
+        <p-message severity="error" size="small" variant="simple" role="alert">
+          Every stage needs a name.
+        </p-message>
+      }
+
+      <p-button
+        label="Add stage"
+        icon="pi pi-plus"
+        severity="secondary"
+        [outlined]="true"
+        size="small"
+        styleClass="add-stage"
+        [disabled]="stages.length >= maxStages"
+        (onClick)="addStage()"
+      />
+    </fieldset>
+  </form>
+
+  <ng-template #footer>
+    <p-button label="Cancel" severity="secondary" [outlined]="true" (onClick)="close()" />
+    <p-button
+      [label]="saving() ? 'Saving...' : 'Save route'"
+      [disabled]="saving()"
+      (onClick)="submit()"
+    />
+  </ng-template>
+</p-dialog>
