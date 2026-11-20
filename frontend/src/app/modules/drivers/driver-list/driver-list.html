@@ -1,0 +1,120 @@
+<div class="filters">
+  <div class="field">
+    <label for="filter-status">Status</label>
+    <p-select
+      inputId="filter-status"
+      [options]="statusOptions"
+      optionLabel="label"
+      optionValue="value"
+      placeholder="All statuses"
+      [showClear]="true"
+      (onChange)="filterByStatus($event.value)"
+    />
+  </div>
+</div>
+
+@if (errorMessage(); as message) {
+  <p-message severity="error" role="alert">{{ message }}</p-message>
+}
+
+<p-table [value]="drivers()" [loading]="loading()" [tableStyle]="{ 'min-width': '48rem' }">
+  <ng-template #header>
+    <tr>
+      <th>Driver</th>
+      <th>Vehicle</th>
+      <th>Sacco</th>
+      <th>Status</th>
+      <th><span class="visually-hidden">Actions</span></th>
+    </tr>
+  </ng-template>
+  <ng-template #body let-driver>
+    <tr>
+      <td>
+        <strong>{{ driver.user.name }}</strong>
+        <div class="muted">{{ driver.licenseNumber }}</div>
+      </td>
+      <td>
+        <strong>{{ driver.vehiclePlate }}</strong>
+        <div class="muted">{{ driver.vehicleMake }} {{ driver.vehicleModel }}</div>
+      </td>
+      <td>{{ driver.saccoName ?? 'No Sacco' }}</td>
+      <td>
+        <p-tag [value]="driver.status | titlecase" [severity]="severity(driver.status)" />
+      </td>
+      <td class="actions">
+        <p-button
+          [label]="driver.status === 'pending' ? 'Review' : 'View'"
+          icon="pi pi-eye"
+          size="small"
+          [outlined]="driver.status !== 'pending'"
+          [ariaLabel]="'Review registration of ' + driver.user.name"
+          (onClick)="review(driver)"
+        />
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template #emptymessage>
+    <tr>
+      <td colspan="5">No drivers found.</td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<p-dialog
+  header="Driver registration"
+  [modal]="true"
+  [style]="{ width: '44rem' }"
+  [breakpoints]="{ '960px': '90vw' }"
+  [visible]="reviewing() !== null"
+  (visibleChange)="$event || closeReview()"
+>
+  @if (reviewing(); as driver) {
+    <p class="review-status">
+      <p-tag [value]="driver.status | titlecase" [severity]="severity(driver.status)" />
+      @if (driver.rejectionReason) {
+        <span class="muted">Rejected: {{ driver.rejectionReason }}</span>
+      }
+    </p>
+
+    <app-driver-details [driver]="driver" />
+
+    @if (rejecting()) {
+      <div class="field reject-reason">
+        <label for="reject-reason">Reason for rejecting {{ driver.user.name }}</label>
+        <input
+          pInputText
+          id="reject-reason"
+          type="text"
+          maxlength="255"
+          [formControl]="reason"
+          fluid
+        />
+        @if (reason.touched && reason.invalid) {
+          <p-message severity="error" size="small" variant="simple" role="alert">
+            Enter a reason so the driver knows what to fix.
+          </p-message>
+        }
+      </div>
+    }
+  }
+
+  <ng-template #footer>
+    @if (reviewing(); as driver) {
+      @if (driver.status !== 'pending') {
+        <p-button label="Close" severity="secondary" [outlined]="true" (onClick)="closeReview()" />
+      } @else if (rejecting()) {
+        <p-button label="Back" severity="secondary" [outlined]="true" (onClick)="cancelReject()" />
+        <p-button label="Reject driver" severity="danger" (onClick)="confirmReject(driver)" />
+      } @else {
+        <p-button
+          label="Reject"
+          icon="pi pi-times"
+          severity="danger"
+          [outlined]="true"
+          (onClick)="startReject()"
+        />
+        <p-button label="Approve" icon="pi pi-check" (onClick)="approve(driver)" />
+      }
+    }
+  </ng-template>
+</p-dialog>

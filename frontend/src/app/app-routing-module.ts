@@ -40,12 +40,36 @@ const routes: Routes = [
     component: AdminLayout,
     canActivate: [authGuard, roleGuard],
     data: roles(Role.ADMIN, Role.OPERATOR),
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'matatus' },
+      {
+        path: 'matatus',
+        loadChildren: () => import('./modules/matatus/matatus-module').then((m) => m.MatatusModule),
+      },
+      {
+        path: 'saccos',
+        loadChildren: () => import('./modules/saccos/saccos-module').then((m) => m.SaccosModule),
+      },
+      {
+        path: 'drivers',
+        loadChildren: () => import('./modules/drivers/drivers-module').then((m) => m.DriversModule),
+      },
+    ],
   },
   {
     path: 'driver',
     component: DriverLayout,
     canActivate: [authGuard, roleGuard],
     data: roles(Role.DRIVER),
+    children: [
+      {
+        path: '',
+        loadChildren: () =>
+          import('./modules/driver-profile/driver-profile-module').then(
+            (m) => m.DriverProfileModule,
+          ),
+      },
+    ],
   },
   {
     path: 'passenger',
