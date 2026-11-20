@@ -1,7 +1,68 @@
-<app-user-bar area="Admin and operator" />
-<nav class="admin-nav" aria-label="Admin">
-  <a routerLink="/admin/matatus" routerLinkActive="active">Matatus</a>
-</nav>
-<main class="content">
-  <router-outlet />
-</main>
+<div class="shell">
+  <aside class="sidebar" id="sidebar" [class.open]="menuOpen()">
+    <a class="logo" routerLink="/admin" (click)="closeMenu()">
+      <span class="logo-mark" aria-hidden="true"><i class="pi pi-car"></i></span>
+      <span class="logo-text">Safari<span>Flow</span></span>
+    </a>
+
+    <nav aria-label="Admin">
+      @for (item of items; track item.url) {
+        <a [routerLink]="item.url" routerLinkActive="active" (click)="closeMenu()">
+          <i class="pi" [class]="item.icon" aria-hidden="true"></i>
+          <span>{{ item.label }}</span>
+          @if (item.url === '/admin/drivers' && pendingDrivers() > 0) {
+            <span class="count" [attr.aria-label]="pendingDrivers() + ' registrations to review'">
+              {{ pendingDrivers() }}
+            </span>
+          }
+        </a>
+      }
+    </nav>
+
+    <button type="button" class="logout" (click)="auth.logout()">
+      <i class="pi pi-sign-out" aria-hidden="true"></i>
+      <span>Log out</span>
+    </button>
+  </aside>
+
+  @if (menuOpen()) {
+    <div class="scrim" (click)="closeMenu()"></div>
+  }
+
+  <div class="main">
+    <header class="topbar">
+      <button
+        type="button"
+        class="menu-button"
+        aria-label="Open menu"
+        aria-controls="sidebar"
+        [attr.aria-expanded]="menuOpen()"
+        (click)="toggleMenu()"
+      >
+        <i class="pi pi-bars" aria-hidden="true"></i>
+      </button>
+
+      <div class="page-title">
+        <h1>{{ title() }}</h1>
+        <p>{{ today | date: 'EEEE, d MMMM y' }}</p>
+      </div>
+
+      <div class="account">
+        <button type="button" class="bell" aria-label="Notifications">
+          <i class="pi pi-bell" aria-hidden="true"></i>
+        </button>
+        @if (auth.user(); as user) {
+          <div class="who">
+            <strong>{{ user.name }}</strong>
+            <span>{{ roleLabel(user.role) }}</span>
+          </div>
+          <span class="avatar" aria-hidden="true">{{ initials(user.name) }}</span>
+        }
+      </div>
+    </header>
+
+    <main class="content">
+      <router-outlet />
+    </main>
+  </div>
+</div>

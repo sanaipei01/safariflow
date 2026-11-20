@@ -1,0 +1,50 @@
+<h2>Driver registration</h2>
+
+@if (loading()) {
+  <p class="muted">Loading...</p>
+} @else {
+  @if (errorMessage(); as message) {
+    <p-message severity="error" role="alert">{{ message }}</p-message>
+  }
+
+  @if (profile(); as driver) {
+    <p-card>
+      <div class="status-card">
+        <p-tag [value]="driver.status | titlecase" [severity]="statusSeverity[driver.status]" />
+
+        @switch (driver.status) {
+          @case ('pending') {
+            <p>Your registration is waiting for review by an admin or operator.</p>
+          }
+          @case ('approved') {
+            <p>Your registration is approved. You can now use SafariFlow as a driver.</p>
+          }
+          @case ('rejected') {
+            <p>
+              Your registration was rejected: <strong>{{ driver.rejectionReason }}</strong>
+            </p>
+            <p-button
+              label="Update and resubmit"
+              icon="pi pi-pencil"
+              (onClick)="openRegistration()"
+            />
+          }
+        }
+      </div>
+
+      <app-driver-details [driver]="driver" />
+    </p-card>
+  } @else if (!errorMessage()) {
+    <p-card header="Complete your registration">
+      <p>You need to register before an admin or operator can approve you as a driver.</p>
+      <p-button label="Register as driver" icon="pi pi-id-card" (onClick)="openRegistration()" />
+    </p-card>
+  }
+}
+
+<app-driver-registration-dialog
+  [(visible)]="registering"
+  [driver]="profile()"
+  (saved)="onSaved($event)"
+/>
+<p-toast />
