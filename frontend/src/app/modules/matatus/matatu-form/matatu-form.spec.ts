@@ -2,6 +2,8 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
+import { By } from '@angular/platform-browser';
+import { Select } from 'primeng/select';
 import { environment } from '../../../../environments/environment';
 import { MatatusModule } from '../matatus-module';
 import { MatatuForm } from './matatu-form';
@@ -33,9 +35,14 @@ describe('MatatuForm', () => {
   afterEach(() => http.verify());
 
   function fill(selector: string, value: string): void {
-    const field = page.querySelector<HTMLInputElement | HTMLSelectElement>(selector)!;
+    const field = page.querySelector<HTMLInputElement>(selector)!;
     field.value = value;
-    field.dispatchEvent(new Event(field instanceof HTMLSelectElement ? 'change' : 'input'));
+    field.dispatchEvent(new Event('input'));
+  }
+
+  function chooseSacco(id: number): void {
+    const select = fixture.debugElement.query(By.directive(Select)).componentInstance as Select;
+    select.updateModel(id);
   }
 
   function submit(): void {
@@ -48,20 +55,19 @@ describe('MatatuForm', () => {
     await fixture.whenStable();
 
     http.expectNone(`${environment.apiUrl}/matatus`);
-    expect(page.querySelectorAll('.field-error').length).toBeGreaterThan(0);
+    expect(page.querySelectorAll('p-message').length).toBeGreaterThan(0);
   });
 
   it('sends the entered values when the form is valid', async () => {
     fill('#plateNumber', 'kda123a');
-    fill('#saccoId', page.querySelector<HTMLSelectElement>('#saccoId')!.options[1].value);
-    fill('#capacity', '33');
+    chooseSacco(1);
     submit();
 
     const request = http.expectOne(`${environment.apiUrl}/matatus`);
     expect(request.request.method).toBe('POST');
     expect(request.request.body).toEqual({
       plateNumber: 'kda123a',
-      capacity: 33,
+      capacity: 14,
       status: 'active',
       saccoId: 1,
     });

@@ -1,54 +1,80 @@
-<section class="matatu-form">
-  <h2>{{ isEdit ? 'Edit matatu' : 'Add matatu' }}</h2>
-
+<p-card [header]="isEdit ? 'Edit matatu' : 'Add matatu'" class="form-card">
   <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
     @if (errorMessage(); as message) {
-      <p class="form-error" role="alert">{{ message }}</p>
+      <p-message severity="error" role="alert">{{ message }}</p-message>
     }
 
-    <div class="form-field">
+    <div class="field">
       <label for="plateNumber">Plate number</label>
-      <input id="plateNumber" type="text" formControlName="plateNumber" placeholder="KDA 123A" />
+      <input
+        pInputText
+        id="plateNumber"
+        type="text"
+        formControlName="plateNumber"
+        placeholder="KDA 123A"
+        fluid
+      />
       @if (form.controls.plateNumber.touched && form.controls.plateNumber.invalid) {
-        <p class="field-error" role="alert">Enter a Kenyan plate number such as KDA 123A.</p>
+        <p-message severity="error" size="small" variant="simple" role="alert">
+          Enter a Kenyan plate number such as KDA 123A.
+        </p-message>
       }
     </div>
 
-    <div class="form-field">
-      <label for="saccoId">SACCO</label>
-      <select id="saccoId" formControlName="saccoId">
-        <option [ngValue]="0" disabled>Select a SACCO</option>
-        @for (item of saccos(); track item.id) {
-          <option [ngValue]="item.id">{{ item.name }}</option>
-        }
-      </select>
+    <div class="field">
+      <label for="saccoId">Sacco</label>
+      <p-select
+        inputId="saccoId"
+        formControlName="saccoId"
+        [options]="saccos()"
+        optionLabel="name"
+        optionValue="id"
+        placeholder="Select a Sacco"
+        fluid
+      />
       @if (form.controls.saccoId.touched && form.controls.saccoId.invalid) {
-        <p class="field-error" role="alert">Select a SACCO.</p>
+        <p-message severity="error" size="small" variant="simple" role="alert">
+          Select a Sacco.
+        </p-message>
       }
     </div>
 
-    <div class="form-field">
+    <div class="field">
       <label for="capacity">Capacity (seats)</label>
-      <input id="capacity" type="number" formControlName="capacity" />
+      <p-inputnumber
+        inputId="capacity"
+        formControlName="capacity"
+        [min]="1"
+        [max]="70"
+        [showButtons]="true"
+        fluid
+      />
       @if (form.controls.capacity.touched && form.controls.capacity.invalid) {
-        <p class="field-error" role="alert">Enter a number from 1 to 70.</p>
+        <p-message severity="error" size="small" variant="simple" role="alert">
+          Enter a number from 1 to 70.
+        </p-message>
       }
     </div>
 
-    <div class="form-field">
+    <div class="field">
       <label for="status">Status</label>
-      <select id="status" formControlName="status" class="capitalize">
-        @for (item of statuses; track item) {
-          <option [value]="item">{{ item }}</option>
-        }
-      </select>
+      <p-select
+        inputId="status"
+        formControlName="status"
+        [options]="statusOptions"
+        optionLabel="label"
+        optionValue="value"
+        fluid
+      />
     </div>
 
     <div class="form-actions">
-      <a class="btn btn-secondary" routerLink="/admin/matatus">Cancel</a>
-      <button type="submit" class="btn btn-primary" [disabled]="loading()">
-        {{ loading() ? 'Saving...' : 'Save matatu' }}
-      </button>
+      <p-button label="Cancel" severity="secondary" [outlined]="true" routerLink="/admin/matatus" />
+      <p-button
+        type="submit"
+        [label]="loading() ? 'Saving...' : 'Save matatu'"
+        [disabled]="loading()"
+      />
     </div>
   </form>
-</section>
+</p-card>

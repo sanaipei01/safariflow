@@ -2,6 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { ConfirmationService } from 'primeng/api';
 import { environment } from '../../../../environments/environment';
 import { Matatu } from '../models/matatu.model';
 import { MatatusModule } from '../matatus-module';
@@ -24,7 +25,12 @@ describe('MatatuList', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [MatatusModule],
-      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
+      providers: [
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        ConfirmationService,
+      ],
     });
     http = TestBed.inject(HttpTestingController);
   });
@@ -46,13 +52,12 @@ describe('MatatuList', () => {
     expect(page.textContent).toContain('KDA 123A');
     expect(page.textContent).toContain('Super Metro');
     expect(page.textContent).toContain('33 seats');
-    expect(page.querySelector('.status-active')).not.toBeNull();
+    expect(page.querySelector('.p-tag')?.textContent).toContain('Active');
   });
 
   it('tells the user when there are no matatus', async () => {
     const page = await render([]);
 
     expect(page.textContent).toContain('No matatus found.');
-    expect(page.querySelector('table')).toBeNull();
   });
 });

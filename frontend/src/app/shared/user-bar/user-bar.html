@@ -6,7 +6,13 @@
   @if (auth.user(); as user) {
     <div class="session">
       <span>{{ user.name }} ({{ user.role }})</span>
-      <button type="button" class="btn btn-secondary" (click)="auth.logout()">Log out</button>
+      <p-button
+        label="Log out"
+        severity="secondary"
+        [outlined]="true"
+        size="small"
+        (onClick)="auth.logout()"
+      />
     </div>
   }
 </header>

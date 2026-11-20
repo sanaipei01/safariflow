@@ -5,7 +5,7 @@ import { finalize } from 'rxjs';
 import { Sacco } from '../../../core/models/sacco.model';
 import { SaccoService } from '../../../core/services/sacco.service';
 import { getErrorMessage } from '../../../core/utils/http-error';
-import { MATATU_STATUSES, MatatuStatus } from '../models/matatu.model';
+import { MATATU_STATUS_OPTIONS, MatatuStatus } from '../models/matatu.model';
 import { MatatuService } from '../services/matatu.service';
 
 /** Kenyan plates such as "KDA 123A" or "KDA 123"; the API stores them in one format. */
@@ -15,7 +15,6 @@ const PLATE_PATTERN = /^k[a-z]{2}\s?\d{3}[a-z]?$/i;
   selector: 'app-matatu-form',
   standalone: false,
   templateUrl: './matatu-form.html',
-  styleUrl: './matatu-form.css',
 })
 export class MatatuForm implements OnInit {
   private readonly formBuilder = inject(NonNullableFormBuilder);
@@ -25,7 +24,7 @@ export class MatatuForm implements OnInit {
   private readonly matatuId = Number(inject(ActivatedRoute).snapshot.paramMap.get('id')) || null;
 
   protected readonly isEdit = this.matatuId !== null;
-  protected readonly statuses = MATATU_STATUSES;
+  protected readonly statusOptions = MATATU_STATUS_OPTIONS;
   protected readonly saccos = signal<Sacco[]>([]);
   protected readonly loading = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
