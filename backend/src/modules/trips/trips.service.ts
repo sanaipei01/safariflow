@@ -101,6 +101,17 @@ export class TripsService {
     return toView(await this.finish(trip, new Date(now)));
   }
 
+  /** How many trips have been started on each route. */
+  async startedCounts(): Promise<Map<number, number>> {
+    const counts = new Map<number, number>();
+    for (const { routeId } of await this.trips.find({
+      select: { routeId: true },
+    })) {
+      counts.set(routeId, (counts.get(routeId) ?? 0) + 1);
+    }
+    return counts;
+  }
+
   /** The trips running now on each of the given routes. */
   async activeOnRoutes(
     routeIds: number[],

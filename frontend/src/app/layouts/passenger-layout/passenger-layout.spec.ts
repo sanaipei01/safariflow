@@ -29,7 +29,7 @@ describe('PassengerLayout', () => {
 
     expect(page.querySelector('.pill')?.textContent).toContain('Passenger');
     const tabs = Array.from(page.querySelectorAll('.tabs a')).map((tab) => tab.textContent?.trim());
-    expect(tabs).toEqual(['Home', 'Find Matatu']);
+    expect(tabs).toEqual(['Home', 'Find Matatu', 'Profile']);
   });
 
   it('keeps the Find Matatu tab lit when the address has the chosen stages', async () => {

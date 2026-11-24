@@ -1,0 +1,23 @@
+<h2 class="title">Profile</h2>
+
+@if (auth.user(); as user) {
+  <p-card>
+    <dl>
+      <dt>Name</dt>
+      <dd>{{ user.name }}</dd>
+      <dt>Email</dt>
+      <dd>{{ user.email }}</dd>
+      <dt>Phone</dt>
+      <dd>{{ user.phone ?? 'Not added' }}</dd>
+    </dl>
+  </p-card>
+}
+
+<p-button
+  label="Log out"
+  icon="pi pi-sign-out"
+  severity="secondary"
+  [outlined]="true"
+  styleClass="full"
+  (onClick)="auth.logout()"
+/>

@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
-import { RouteMatch, SearchQuery } from '../models/route-match.model';
+import { RouteMatch, RouteSummary, SearchQuery } from '../models/route-match.model';
 
 @Injectable({ providedIn: 'root' })
 export class RouteSearchService {
@@ -11,6 +11,10 @@ export class RouteSearchService {
 
   stages(): Observable<string[]> {
     return this.http.get<string[]>(`${this.url}/stages`);
+  }
+
+  popular(): Observable<RouteSummary[]> {
+    return this.http.get<RouteSummary[]>(`${this.url}/popular`);
   }
 
   search({ from, to }: SearchQuery): Observable<RouteMatch[]> {

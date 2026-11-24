@@ -10,6 +10,8 @@ import { RouteSearch } from './route-search';
 const thikaRoad: RouteMatch = {
   routeId: 1,
   routeName: 'Thika Road',
+  routeNumber: '237',
+  fare: 100,
   stops: ['CBD', 'Githurai', 'Thika'],
   trips: [],
 };
@@ -65,6 +67,8 @@ describe('RouteSearch', () => {
     expect(page.querySelector('.match-header')?.textContent).toContain('Thika Road');
     const stops = Array.from(page.querySelectorAll('.stops li')).map((li) => li.textContent);
     expect(stops).toEqual(['CBD', 'Githurai', 'Thika']);
+    expect(page.querySelector('.match-header')?.textContent).toContain('Route 237');
+    expect(page.querySelector('.match-header')?.textContent).toContain('KES 100');
   });
 
   it('lists the matatus running on a route, or says there are none', async () => {

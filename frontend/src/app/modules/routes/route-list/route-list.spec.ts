@@ -13,6 +13,8 @@ const ROUTES_URL = `${environment.apiUrl}/routes`;
 const route: MatatuRoute = {
   id: 1,
   name: 'Nairobi - Thika',
+  routeNumber: '237',
+  fare: 100,
   isActive: true,
   stages: [
     { id: 1, name: 'Nairobi CBD', sequence: 1 },

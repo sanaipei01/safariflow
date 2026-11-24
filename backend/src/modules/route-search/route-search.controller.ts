@@ -1,7 +1,11 @@
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { SearchRoutesQueryDto } from './dto/search-routes-query.dto';
-import { RouteResult, RouteSearchService } from './route-search.service';
+import {
+  RouteMatch,
+  RouteResult,
+  RouteSearchService,
+} from './route-search.service';
 
 @Controller('route-search')
 @UseGuards(JwtAuthGuard)
@@ -11,6 +15,11 @@ export class RouteSearchController {
   @Get('stages')
   stages(): Promise<string[]> {
     return this.routeSearchService.stages();
+  }
+
+  @Get('popular')
+  popular(): Promise<RouteMatch[]> {
+    return this.routeSearchService.popular();
   }
 
   @Get()

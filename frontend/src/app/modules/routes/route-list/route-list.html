@@ -9,18 +9,22 @@
 <p-table [value]="routes()" [loading]="loading()" [tableStyle]="{ 'min-width': '40rem' }">
   <ng-template #header>
     <tr>
+      <th>No.</th>
       <th>Route</th>
       <th>Stages</th>
+      <th>Fare</th>
       <th>Status</th>
       <th><span class="visually-hidden">Actions</span></th>
     </tr>
   </ng-template>
   <ng-template #body let-route>
     <tr>
+      <td>{{ route.routeNumber ?? '-' }}</td>
       <td>
         <strong>{{ route.name }}</strong>
       </td>
       <td>{{ stageSummary(route) }}</td>
+      <td>{{ route.fare === null ? '-' : 'KES ' + route.fare }}</td>
       <td>
         <p-tag
           [value]="route.isActive ? 'Active' : 'Inactive'"
@@ -50,7 +54,7 @@
   </ng-template>
   <ng-template #emptymessage>
     <tr>
-      <td colspan="4">No routes found.</td>
+      <td colspan="6">No routes found.</td>
     </tr>
   </ng-template>
 </p-table>

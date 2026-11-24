@@ -24,6 +24,12 @@ describe('RouteSearchService', () => {
     http.expectOne(`${environment.apiUrl}/route-search/stages`).flush([]);
   });
 
+  it('loads the popular routes', () => {
+    service.popular().subscribe();
+
+    http.expectOne(`${environment.apiUrl}/route-search/popular`).flush([]);
+  });
+
   it('searches from one stage to another', () => {
     service.search({ from: 'CBD', to: 'Thika' }).subscribe();
 

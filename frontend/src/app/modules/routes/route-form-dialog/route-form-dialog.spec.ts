@@ -11,6 +11,8 @@ const ROUTES_URL = `${environment.apiUrl}/routes`;
 const existing: MatatuRoute = {
   id: 5,
   name: 'Nairobi - Thika',
+  routeNumber: '237',
+  fare: 100,
   isActive: false,
   stages: [
     { id: 1, name: 'Nairobi CBD', sequence: 1 },
@@ -91,6 +93,8 @@ describe('RouteFormDialog', () => {
     expect(request.request.method).toBe('POST');
     expect(request.request.body).toEqual({
       name: 'Nairobi - Thika',
+      routeNumber: null,
+      fare: null,
       isActive: true,
       stages: ['Nairobi CBD', 'Githurai', 'Thika'],
     });
@@ -99,6 +103,35 @@ describe('RouteFormDialog', () => {
 
     expect(saved).toBe(1);
     expect(fixture.componentInstance.visible()).toBe(false);
+  });
+
+  it('sends the route number and fare when they are filled in', async () => {
+    await open();
+    type(body.querySelector<HTMLInputElement>('#name')!, 'Nairobi - Thika');
+    type(body.querySelector<HTMLInputElement>('#routeNumber')!, ' 237 ');
+    type(body.querySelector<HTMLInputElement>('#fare')!, '100');
+    type(stageInputs()[0], 'Nairobi CBD');
+    type(stageInputs()[1], 'Thika');
+
+    textButton('Save route').click();
+
+    const request = http.expectOne(ROUTES_URL);
+    expect(request.request.body).toMatchObject({ routeNumber: '237', fare: 100 });
+    request.flush({});
+  });
+
+  it('does not accept a negative fare', async () => {
+    await open();
+    type(body.querySelector<HTMLInputElement>('#name')!, 'Nairobi - Thika');
+    type(body.querySelector<HTMLInputElement>('#fare')!, '-5');
+    type(stageInputs()[0], 'Nairobi CBD');
+    type(stageInputs()[1], 'Thika');
+
+    textButton('Save route').click();
+    await fixture.whenStable();
+
+    http.expectNone(ROUTES_URL);
+    expect(body.textContent).toContain('Enter a fare from 0 to 10000');
   });
 
   it('keeps at least two stages', async () => {
@@ -120,6 +153,7 @@ describe('RouteFormDialog', () => {
     const update = http.expectOne(`${ROUTES_URL}/5`);
     expect(update.request.method).toBe('PATCH');
     expect(update.request.body.isActive).toBe(false);
+    expect(update.request.body).toMatchObject({ routeNumber: '237', fare: 100 });
     update.flush({});
   });
 

@@ -18,6 +18,8 @@ function buildRoute(overrides: Partial<Route> = {}): Route {
   return {
     id: 1,
     name: 'Nairobi - Thika',
+    routeNumber: null,
+    fare: null,
     isActive: true,
     stages: buildStages(['Nairobi CBD', 'Githurai', 'Thika']),
     createdAt: new Date(),
@@ -69,6 +71,23 @@ describe('RoutesService', () => {
       expect(route.stages.map((stage) => stage.sequence)).toEqual([1, 2, 3]);
     });
 
+    it('keeps the route number and fare, or leaves them empty', async () => {
+      const numbered = await service.create({
+        name: 'Nairobi - Nakuru',
+        routeNumber: '102',
+        fare: 350,
+        stages: ['Nairobi CBD', 'Nakuru'],
+      });
+      const plain = await service.create({
+        name: 'Nairobi - Ruiru',
+        routeNumber: '',
+        stages: ['Nairobi CBD', 'Ruiru'],
+      });
+
+      expect(numbered).toMatchObject({ routeNumber: '102', fare: 350 });
+      expect(plain).toMatchObject({ routeNumber: null, fare: null });
+    });
+
     it('rejects a route name that is already used', async () => {
       await expect(
         service.create({ name: 'Nairobi - Thika', stages: ['A', 'B'] }),
@@ -104,6 +123,14 @@ describe('RoutesService', () => {
       expect(route.isActive).toBe(false);
       expect(route.name).toBe('Nairobi - Thika');
       expect(stageNames(route)).toEqual(['Nairobi CBD', 'Githurai', 'Thika']);
+    });
+
+    it('sets and clears the route number and fare', async () => {
+      const set = await service.update(1, { routeNumber: '237', fare: 100 });
+      expect(set).toMatchObject({ routeNumber: '237', fare: 100 });
+
+      const cleared = await service.update(1, { routeNumber: '', fare: null });
+      expect(cleared).toMatchObject({ routeNumber: null, fare: null });
     });
 
     it('replaces the whole list of stages and renumbers them', async () => {

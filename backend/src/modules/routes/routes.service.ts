@@ -24,6 +24,8 @@ export class RoutesService {
     const route = await this.routesRepository.save(
       this.routesRepository.create({
         name: dto.name,
+        routeNumber: dto.routeNumber || null,
+        fare: dto.fare ?? null,
         isActive: dto.isActive,
         stages: this.buildStages(dto.stages),
       }),
@@ -55,6 +57,12 @@ export class RoutesService {
     if (dto.name !== undefined) {
       await this.assertNameIsFree(dto.name, id);
       route.name = dto.name;
+    }
+    if (dto.routeNumber !== undefined) {
+      route.routeNumber = dto.routeNumber || null;
+    }
+    if (dto.fare !== undefined) {
+      route.fare = dto.fare;
     }
     if (dto.isActive !== undefined) {
       route.isActive = dto.isActive;

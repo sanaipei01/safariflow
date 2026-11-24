@@ -28,7 +28,13 @@ describe('RouteService', () => {
   });
 
   it('creates and updates a route with its stages in order', () => {
-    const body = { name: 'Nairobi - Thika', isActive: true, stages: ['Nairobi CBD', 'Thika'] };
+    const body = {
+      name: 'Nairobi - Thika',
+      routeNumber: null,
+      fare: null,
+      isActive: true,
+      stages: ['Nairobi CBD', 'Thika'],
+    };
 
     service.create(body).subscribe();
     const create = http.expectOne(ROUTES_URL);

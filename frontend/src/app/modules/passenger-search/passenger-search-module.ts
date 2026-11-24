@@ -7,11 +7,12 @@ import { MessageModule } from 'primeng/message';
 import { SelectModule } from 'primeng/select';
 import { TagModule } from 'primeng/tag';
 import { PassengerHome } from './passenger-home/passenger-home';
+import { PassengerProfile } from './passenger-profile/passenger-profile';
 import { PassengerSearchRoutingModule } from './passenger-search-routing-module';
 import { RouteSearch } from './route-search/route-search';
 
 @NgModule({
-  declarations: [PassengerHome, RouteSearch],
+  declarations: [PassengerHome, PassengerProfile, RouteSearch],
   imports: [
     CommonModule,
     ReactiveFormsModule,

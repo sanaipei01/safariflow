@@ -33,6 +33,38 @@
       }
     </div>
 
+    <div class="pair">
+      <div class="field">
+        <label for="routeNumber">Route number</label>
+        <input
+          pInputText
+          id="routeNumber"
+          type="text"
+          formControlName="routeNumber"
+          maxlength="10"
+          placeholder="237"
+          fluid
+        />
+      </div>
+      <div class="field">
+        <label for="fare">Fare (KES)</label>
+        <input
+          pInputText
+          id="fare"
+          type="number"
+          step="1"
+          formControlName="fare"
+          placeholder="100"
+          fluid
+        />
+        @if (form.controls.fare.touched && form.controls.fare.invalid) {
+          <p-message severity="error" size="small" variant="simple" role="alert">
+            Enter a fare from 0 to 10000.
+          </p-message>
+        }
+      </div>
+    </div>
+
     <div class="field">
       <label for="isActive">Status</label>
       <p-select

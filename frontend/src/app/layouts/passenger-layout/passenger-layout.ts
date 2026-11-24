@@ -22,5 +22,6 @@ export class PassengerLayout {
   protected readonly tabs = [
     { label: 'Home', url: '/passenger', icon: 'pi-home' },
     { label: 'Find Matatu', url: '/passenger/find', icon: 'pi-search' },
+    { label: 'Profile', url: '/passenger/profile', icon: 'pi-user' },
   ];
 }

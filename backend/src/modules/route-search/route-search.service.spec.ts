@@ -4,11 +4,19 @@ import { Stage } from '../routes/entities/stage.entity';
 import { ActiveTrip, TripsService } from '../trips/trips.service';
 import { matchRoutes, RouteSearchService } from './route-search.service';
 
-function buildRoute(id: number, name: string, stages: string[]): Route {
+function buildRoute(
+  id: number,
+  name: string,
+  stages: string[],
+  extra: Partial<Route> = {},
+): Route {
   return {
     id,
     name,
+    routeNumber: null,
+    fare: null,
     isActive: true,
+    ...extra,
     stages: stages.map((stage, index) => ({
       name: stage,
       sequence: index + 1,
@@ -16,7 +24,10 @@ function buildRoute(id: number, name: string, stages: string[]): Route {
   } as Route;
 }
 
-const thika = buildRoute(1, 'Thika Road', ['CBD', 'Githurai', 'Thika']);
+const thika = buildRoute(1, 'Thika Road', ['CBD', 'Githurai', 'Thika'], {
+  routeNumber: '237',
+  fare: 100,
+});
 const express = buildRoute(2, 'Thika Express', ['CBD', 'Thika']);
 const westlands = buildRoute(3, 'Westlands', ['CBD', 'Westlands']);
 
@@ -29,6 +40,12 @@ describe('matchRoutes', () => {
       'Thika Road',
     ]);
     expect(matches[1].stops).toEqual(['CBD', 'Githurai', 'Thika']);
+  });
+
+  it('carries the route number and fare', () => {
+    const [match] = matchRoutes([thika], 'CBD', 'Thika');
+
+    expect(match).toMatchObject({ routeNumber: '237', fare: 100 });
   });
 
   it('only matches in the direction the route travels', () => {
@@ -66,6 +83,11 @@ describe('RouteSearchService', () => {
     } as unknown as Repository<Route>,
     {
       activeOnRoutes: async () => new Map([[1, [kdaTrip]]]),
+      startedCounts: async () =>
+        new Map([
+          [1, 4],
+          [3, 9],
+        ]),
     } as unknown as TripsService,
   );
 
@@ -101,6 +123,29 @@ describe('RouteSearchService', () => {
     const [found] = await service.search('CBD', 'Thika');
 
     expect(found.trips).toEqual([]);
+  });
+
+  it('ranks the popular routes by trips started, then by name', async () => {
+    routes = [thika, express, westlands];
+
+    const popular = await service.popular();
+
+    expect(popular.map((route) => route.routeName)).toEqual([
+      'Westlands',
+      'Thika Road',
+      'Thika Express',
+    ]);
+    expect(popular[1]).toMatchObject({
+      routeNumber: '237',
+      fare: 100,
+      stops: ['CBD', 'Githurai', 'Thika'],
+    });
+  });
+
+  it('lists only as many popular routes as asked for', async () => {
+    routes = [thika, express, westlands];
+
+    expect(await service.popular(2)).toHaveLength(2);
   });
 
   it('refuses a search from a stage to itself', async () => {

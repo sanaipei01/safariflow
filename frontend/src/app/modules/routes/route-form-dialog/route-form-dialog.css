@@ -22,3 +22,9 @@
   flex: 1;
   min-width: 0;
 }
+
+.pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 0.75rem;
+}

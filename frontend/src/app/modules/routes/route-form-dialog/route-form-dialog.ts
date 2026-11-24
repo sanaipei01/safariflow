@@ -36,6 +36,8 @@ export class RouteFormDialog {
 
   protected readonly form = this.formBuilder.group({
     name: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(100)]],
+    routeNumber: ['', Validators.maxLength(10)],
+    fare: this.formBuilder.control<number | null>(null, [Validators.min(0), Validators.max(10000)]),
     isActive: [true],
     stages: this.formBuilder.array([this.newStage(), this.newStage()]),
   });
@@ -78,8 +80,14 @@ export class RouteFormDialog {
       return;
     }
 
-    const { name, isActive, stages } = this.form.getRawValue();
-    const request = { name: name.trim(), isActive, stages: stages.map((stage) => stage.trim()) };
+    const { name, routeNumber, fare, isActive, stages } = this.form.getRawValue();
+    const request = {
+      name: name.trim(),
+      routeNumber: routeNumber.trim() || null,
+      fare,
+      isActive,
+      stages: stages.map((stage) => stage.trim()),
+    };
     const route = this.route();
     const save$ = route
       ? this.routeService.update(route.id, request)
@@ -102,12 +110,17 @@ export class RouteFormDialog {
     const route = this.route();
     if (route) {
       route.stages.forEach((stage) => this.stages.push(this.newStage(stage.name)));
-      this.form.patchValue({ name: route.name, isActive: route.isActive });
+      this.form.patchValue({
+        name: route.name,
+        routeNumber: route.routeNumber ?? '',
+        fare: route.fare,
+        isActive: route.isActive,
+      });
       return;
     }
     this.stages.push(this.newStage());
     this.stages.push(this.newStage());
-    this.form.reset({ name: '', isActive: true });
+    this.form.reset({ name: '', routeNumber: '', fare: null, isActive: true });
   }
 
   private newStage(name = ''): FormControl<string> {

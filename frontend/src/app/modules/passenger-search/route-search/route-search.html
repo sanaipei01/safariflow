@@ -61,7 +61,15 @@
       <p-card>
         <div class="match-header">
           <strong>{{ match.routeName }}</strong>
-          <p-tag [value]="match.stops.length + ' stages'" severity="secondary" />
+          <span class="tags">
+            @if (match.routeNumber) {
+              <p-tag [value]="'Route ' + match.routeNumber" severity="info" />
+            }
+            @if (match.fare !== null) {
+              <p-tag [value]="'KES ' + match.fare" severity="contrast" />
+            }
+            <p-tag [value]="match.stops.length + ' stages'" severity="secondary" />
+          </span>
         </div>
         <ol class="stops">
           @for (stop of match.stops; track $index) {

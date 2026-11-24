@@ -65,7 +65,7 @@ describe('TripsService', () => {
         }
         return trip;
       },
-      find: async ({ where }: { where: Condition }) =>
+      find: async ({ where = {} }: { where?: Condition }) =>
         trips
           .filter((trip) => matches(trip, where))
           .map((trip) =>
@@ -197,6 +197,19 @@ describe('TripsService', () => {
         startedAt: new Date(now - HOUR),
       },
     ]);
+  });
+
+  it('counts the trips started on each route, finished or not', async () => {
+    trips.push(
+      runningTrip(),
+      runningTrip({ status: TripStatus.COMPLETED }),
+      runningTrip({ routeId: closedRoute.id }),
+    );
+
+    const counts = await service.startedCounts();
+
+    expect(counts.get(thikaRoad.id)).toBe(2);
+    expect(counts.get(closedRoute.id)).toBe(1);
   });
 
   it('lists the active routes by name', async () => {

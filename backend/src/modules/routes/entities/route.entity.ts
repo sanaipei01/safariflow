@@ -16,6 +16,14 @@ export class Route {
   @Column({ unique: true })
   name: string;
 
+  /** The number painted on the matatu, for example "237". */
+  @Column({ type: 'varchar', length: 10, nullable: true })
+  routeNumber: string | null;
+
+  /** The usual fare for the whole route, in Kenya shillings. */
+  @Column({ type: 'int', nullable: true })
+  fare: number | null;
+
   @Column({ default: true })
   isActive: boolean;
 

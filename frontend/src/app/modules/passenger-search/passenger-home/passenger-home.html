@@ -36,13 +36,35 @@
   <p-button type="submit" label="Find a matatu" icon="pi pi-search" styleClass="full" />
 </form>
 
+@if (popular().length) {
+  <section class="list popular">
+    <h2>Popular routes</h2>
+    @for (route of popular(); track route.routeId) {
+      <button type="button" class="item" (click)="openRoute(route)">
+        @if (route.routeNumber) {
+          <span class="badge">{{ route.routeNumber }}</span>
+        } @else {
+          <i class="pi pi-directions" aria-hidden="true"></i>
+        }
+        <span class="info">
+          <strong>{{ route.routeName }}</strong>
+          <small>{{ route.stops[0] }} to {{ route.stops[route.stops.length - 1] }}</small>
+        </span>
+        @if (route.fare !== null) {
+          <span class="fare">KES {{ route.fare }}</span>
+        }
+      </button>
+    }
+  </section>
+}
+
 @if (recent.length) {
-  <section class="recent">
+  <section class="list recent">
     <h2>Recent searches</h2>
     @for (item of recent; track item.from + item.to) {
-      <button type="button" class="recent-item" (click)="open(item)">
+      <button type="button" class="item" (click)="open(item)">
         <i class="pi pi-history" aria-hidden="true"></i>
-        <span>{{ item.from }} to {{ item.to }}</span>
+        <span class="info">{{ item.from }} to {{ item.to }}</span>
         <i class="pi pi-angle-right" aria-hidden="true"></i>
       </button>
     }

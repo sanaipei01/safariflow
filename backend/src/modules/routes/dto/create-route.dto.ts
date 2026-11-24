@@ -3,10 +3,13 @@ import {
   ArrayMinSize,
   IsArray,
   IsBoolean,
+  IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
+  Max,
   MaxLength,
+  Min,
 } from 'class-validator';
 import { Trim } from '../../../common/decorators/trim.decorator';
 
@@ -20,6 +23,19 @@ export class CreateRouteDto {
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;
+
+  @Trim()
+  @IsOptional()
+  @IsString()
+  @MaxLength(10)
+  routeNumber?: string | null;
+
+  /** In Kenya shillings. */
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Max(10000)
+  fare?: number | null;
 
   /** Stage names in travel order, from the origin to the destination. */
   @Trim()

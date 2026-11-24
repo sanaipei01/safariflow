@@ -7,11 +7,17 @@ export interface ActiveTrip {
   startedAt: string;
 }
 
-export interface RouteMatch {
+export interface RouteSummary {
   routeId: number;
   routeName: string;
+  routeNumber: string | null;
+  /** The usual fare for the whole route, in Kenya shillings. */
+  fare: number | null;
   /** From the origin to the destination, both included. */
   stops: string[];
+}
+
+export interface RouteMatch extends RouteSummary {
   trips: ActiveTrip[];
 }
 

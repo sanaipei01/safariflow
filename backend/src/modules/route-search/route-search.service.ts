@@ -7,6 +7,8 @@ import { ActiveTrip, TripsService } from '../trips/trips.service';
 export interface RouteMatch {
   routeId: number;
   routeName: string;
+  routeNumber: string | null;
+  fare: number | null;
   /** The stops from the origin to the destination, both included. */
   stops: string[];
 }
@@ -33,6 +35,8 @@ export function matchRoutes(
       matches.push({
         routeId: route.id,
         routeName: route.name,
+        routeNumber: route.routeNumber,
+        fare: route.fare,
         stops: names.slice(start, end + 1),
       });
     }
@@ -74,6 +78,25 @@ export class RouteSearchService {
       ...match,
       trips: running.get(match.routeId) ?? [],
     }));
+  }
+
+  /** The routes with the most trips started, then the rest by name. */
+  async popular(limit = 5): Promise<RouteMatch[]> {
+    const started = await this.tripsService.startedCounts();
+    return (await this.activeRoutes())
+      .sort(
+        (a, b) =>
+          (started.get(b.id) ?? 0) - (started.get(a.id) ?? 0) ||
+          a.name.localeCompare(b.name),
+      )
+      .slice(0, limit)
+      .map((route) => ({
+        routeId: route.id,
+        routeName: route.name,
+        routeNumber: route.routeNumber,
+        fare: route.fare,
+        stops: route.stages.map((stage) => stage.name),
+      }));
   }
 
   private activeRoutes(): Promise<Route[]> {
