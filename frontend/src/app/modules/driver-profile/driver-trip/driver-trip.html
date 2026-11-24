@@ -1,0 +1,44 @@
+<p-card header="Trip">
+  @if (loading()) {
+    <p class="muted">Loading...</p>
+  } @else {
+    @if (errorMessage(); as message) {
+      <p-message severity="error" role="alert">{{ message }}</p-message>
+    }
+
+    @if (trip(); as current) {
+      <p>
+        <p-tag value="In progress" severity="success" />
+      </p>
+      <p>
+        You are running <strong>{{ current.routeName }}</strong> since
+        {{ current.startedAt | date: 'shortTime' }}.
+      </p>
+      <p-button
+        label="End trip"
+        icon="pi pi-stop-circle"
+        severity="danger"
+        [loading]="busy()"
+        (onClick)="end()"
+      />
+    } @else {
+      <p>Choose your route, then start the trip so passengers can find you.</p>
+      <div class="start">
+        <p-select
+          inputId="trip-route"
+          [formControl]="routeControl"
+          [options]="routes()"
+          optionLabel="name"
+          optionValue="id"
+          [filter]="true"
+          placeholder="Choose your route"
+          ariaLabel="Route"
+        />
+        <p-button label="Start trip" icon="pi pi-play" [loading]="busy()" (onClick)="start()" />
+      </div>
+      @if (!routes().length) {
+        <p class="muted">No routes are available yet. Ask an admin to add one.</p>
+      }
+    }
+  }
+</p-card>

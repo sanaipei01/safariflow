@@ -7,6 +7,7 @@ import { MatatusModule } from './modules/matatus/matatus.module';
 import { RouteSearchModule } from './modules/route-search/route-search.module';
 import { RoutesModule } from './modules/routes/routes.module';
 import { SaccosModule } from './modules/saccos/saccos.module';
+import { TripsModule } from './modules/trips/trips.module';
 import { UsersModule } from './modules/users/users.module';
 
 @Module({
@@ -28,6 +29,7 @@ import { UsersModule } from './modules/users/users.module';
     DriversModule,
     RoutesModule,
     RouteSearchModule,
+    TripsModule,
   ],
 })
 export class AppModule {}

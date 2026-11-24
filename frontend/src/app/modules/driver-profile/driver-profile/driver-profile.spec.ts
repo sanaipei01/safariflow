@@ -9,6 +9,7 @@ import { DriverProfileModule } from '../driver-profile-module';
 import { DriverProfile } from './driver-profile';
 
 const ME_URL = `${environment.apiUrl}/drivers/me`;
+const TRIPS_URL = `${environment.apiUrl}/trips`;
 
 describe('DriverProfile', () => {
   let fixture: ComponentFixture<DriverProfile>;
@@ -69,11 +70,21 @@ describe('DriverProfile', () => {
     expect(popup()).toBeNull();
   });
 
-  it('tells an approved driver they are approved', async () => {
+  it('tells an approved driver they are approved and lets them start a trip', async () => {
     await loadProfile(buildDriver({ status: 'approved' }));
+    http.expectOne(`${TRIPS_URL}/current`).flush(null);
+    http.expectOne(`${TRIPS_URL}/routes`).flush([{ id: 1, name: 'Thika Road' }]);
+    await fixture.whenStable();
 
     expect(page.querySelector('.p-tag')?.textContent).toContain('Approved');
     expect(page.textContent).not.toContain('Update and resubmit');
+    expect(page.textContent).toContain('Start trip');
+  });
+
+  it('does not offer trips until the driver is approved', async () => {
+    await loadProfile(buildDriver());
+
+    expect(page.querySelector('app-driver-trip')).toBeNull();
   });
 
   it('shows why a registration was rejected and offers to correct it', async () => {

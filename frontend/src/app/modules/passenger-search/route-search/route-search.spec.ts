@@ -11,6 +11,15 @@ const thikaRoad: RouteMatch = {
   routeId: 1,
   routeName: 'Thika Road',
   stops: ['CBD', 'Githurai', 'Thika'],
+  trips: [],
+};
+
+const runningTrip = {
+  id: 7,
+  plate: 'KDA 123A',
+  capacity: 14,
+  saccoName: 'Super Metro',
+  startedAt: '2026-11-24T09:00:00Z',
 };
 
 describe('RouteSearch', () => {
@@ -56,6 +65,21 @@ describe('RouteSearch', () => {
     expect(page.querySelector('.match-header')?.textContent).toContain('Thika Road');
     const stops = Array.from(page.querySelectorAll('.stops li')).map((li) => li.textContent);
     expect(stops).toEqual(['CBD', 'Githurai', 'Thika']);
+  });
+
+  it('lists the matatus running on a route, or says there are none', async () => {
+    const { page, searchFor } = await render();
+
+    await searchFor('CBD', 'Thika');
+    expect(page.querySelector('.running')?.textContent).toContain('No matatu is running');
+
+    search.mockReturnValue(of([{ ...thikaRoad, trips: [runningTrip] }]));
+    await searchFor('CBD', 'Thika');
+    const running = page.querySelector('.running')?.textContent;
+    expect(running).toContain('1 running now');
+    expect(running).toContain('KDA 123A');
+    expect(running).toContain('14 seats');
+    expect(running).toContain('Super Metro');
   });
 
   it('searches straight away for the stages the Home page sent', async () => {

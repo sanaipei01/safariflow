@@ -34,6 +34,10 @@
 
       <app-driver-details [driver]="driver" />
     </p-card>
+
+    @if (driver.status === 'approved') {
+      <app-driver-trip />
+    }
   } @else if (!errorMessage()) {
     <p-card header="Complete your registration">
       <p>You need to register before an admin or operator can approve you as a driver.</p>

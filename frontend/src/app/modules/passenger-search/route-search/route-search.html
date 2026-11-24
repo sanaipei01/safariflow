@@ -68,6 +68,31 @@
             <li [class.end]="$first || $last">{{ stop }}</li>
           }
         </ol>
+        <div class="running">
+          @if (match.trips.length) {
+            <p-tag
+              [value]="match.trips.length + ' running now'"
+              severity="success"
+              icon="pi pi-circle-fill"
+            />
+            <ul>
+              @for (trip of match.trips; track trip.id) {
+                <li>
+                  <strong>{{ trip.plate }}</strong>
+                  <span>
+                    {{ trip.capacity }} seats
+                    @if (trip.saccoName) {
+                      &middot; {{ trip.saccoName }}
+                    }
+                    &middot; started {{ trip.startedAt | date: 'shortTime' }}
+                  </span>
+                </li>
+              }
+            </ul>
+          } @else {
+            <span class="none">No matatu is running on this route right now.</span>
+          }
+        </div>
       </p-card>
     }
   } @else {

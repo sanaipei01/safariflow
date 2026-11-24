@@ -8,15 +8,17 @@ import { DialogModule } from 'primeng/dialog';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
+import { SelectModule } from 'primeng/select';
 import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
 import { SharedModule } from '../../shared/shared-module';
 import { DriverProfile } from './driver-profile/driver-profile';
 import { DriverProfileRoutingModule } from './driver-profile-routing-module';
+import { DriverTrip } from './driver-trip/driver-trip';
 import { DriverRegistrationDialog } from './driver-registration-dialog/driver-registration-dialog';
 
 @NgModule({
-  declarations: [DriverProfile, DriverRegistrationDialog],
+  declarations: [DriverProfile, DriverRegistrationDialog, DriverTrip],
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -27,6 +29,7 @@ import { DriverRegistrationDialog } from './driver-registration-dialog/driver-re
     InputNumberModule,
     InputTextModule,
     MessageModule,
+    SelectModule,
     TagModule,
     ToastModule,
     SharedModule,

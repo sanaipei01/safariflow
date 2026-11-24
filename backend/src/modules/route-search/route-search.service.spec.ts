@@ -1,6 +1,7 @@
 import { Repository } from 'typeorm';
 import { Route } from '../routes/entities/route.entity';
 import { Stage } from '../routes/entities/stage.entity';
+import { ActiveTrip, TripsService } from '../trips/trips.service';
 import { matchRoutes, RouteSearchService } from './route-search.service';
 
 function buildRoute(id: number, name: string, stages: string[]): Route {
@@ -45,15 +46,28 @@ describe('matchRoutes', () => {
   });
 });
 
+const kdaTrip: ActiveTrip = {
+  id: 7,
+  plate: 'KDA 123A',
+  capacity: 14,
+  saccoName: null,
+  startedAt: new Date('2026-11-24T09:00:00Z'),
+};
+
 describe('RouteSearchService', () => {
   let routes: Route[];
   let query: unknown;
-  const service = new RouteSearchService({
-    find: async (options: unknown) => {
-      query = options;
-      return routes;
-    },
-  } as unknown as Repository<Route>);
+  const service = new RouteSearchService(
+    {
+      find: async (options: unknown) => {
+        query = options;
+        return routes;
+      },
+    } as unknown as Repository<Route>,
+    {
+      activeOnRoutes: async () => new Map([[1, [kdaTrip]]]),
+    } as unknown as TripsService,
+  );
 
   beforeEach(() => {
     routes = [thika, westlands];
@@ -70,6 +84,23 @@ describe('RouteSearchService', () => {
     await service.search('CBD', 'Thika');
 
     expect(query).toMatchObject({ where: { isActive: true } });
+  });
+
+  it('adds the matatus running on each route found', async () => {
+    routes = [thika, westlands];
+
+    const [found] = await service.search('CBD', 'Thika');
+
+    expect(found.routeName).toBe('Thika Road');
+    expect(found.trips).toEqual([kdaTrip]);
+  });
+
+  it('gives an empty list for a route with nothing running', async () => {
+    routes = [express];
+
+    const [found] = await service.search('CBD', 'Thika');
+
+    expect(found.trips).toEqual([]);
   });
 
   it('refuses a search from a stage to itself', async () => {

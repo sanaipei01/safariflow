@@ -2,12 +2,18 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Route } from '../routes/entities/route.entity';
+import { ActiveTrip, TripsService } from '../trips/trips.service';
 
 export interface RouteMatch {
   routeId: number;
   routeName: string;
   /** The stops from the origin to the destination, both included. */
   stops: string[];
+}
+
+export interface RouteResult extends RouteMatch {
+  /** The matatus running on this route right now. */
+  trips: ActiveTrip[];
 }
 
 const same = (a: string, b: string) => a.toLowerCase() === b.toLowerCase();
@@ -42,6 +48,7 @@ export class RouteSearchService {
   constructor(
     @InjectRepository(Route)
     private readonly routesRepository: Repository<Route>,
+    private readonly tripsService: TripsService,
   ) {}
 
   /** Every stage on an active route, once each, for the search boxes. */
@@ -55,11 +62,18 @@ export class RouteSearchService {
     return [...names.values()].sort((a, b) => a.localeCompare(b));
   }
 
-  async search(from: string, to: string): Promise<RouteMatch[]> {
+  async search(from: string, to: string): Promise<RouteResult[]> {
     if (same(from, to)) {
       throw new BadRequestException('Choose two different stages');
     }
-    return matchRoutes(await this.activeRoutes(), from, to);
+    const matches = matchRoutes(await this.activeRoutes(), from, to);
+    const running = await this.tripsService.activeOnRoutes(
+      matches.map((match) => match.routeId),
+    );
+    return matches.map((match) => ({
+      ...match,
+      trips: running.get(match.routeId) ?? [],
+    }));
   }
 
   private activeRoutes(): Promise<Route[]> {

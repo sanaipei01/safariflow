@@ -72,6 +72,30 @@ p-card {
   font-weight: 600;
 }
 
+.running {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--p-content-border-color, #e5e7eb);
+}
+
+.running ul {
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.running li {
+  display: flex;
+  flex-direction: column;
+  padding: 0.25rem 0;
+}
+
+.running li span,
+.none {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
 @media (max-width: 40rem) {
   .search-form {
     grid-template-columns: 1fr;
