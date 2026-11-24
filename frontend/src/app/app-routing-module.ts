@@ -80,6 +80,15 @@ const routes: Routes = [
     component: PassengerLayout,
     canActivate: [authGuard, roleGuard],
     data: roles(Role.PASSENGER),
+    children: [
+      {
+        path: '',
+        loadChildren: () =>
+          import('./modules/passenger-search/passenger-search-module').then(
+            (m) => m.PassengerSearchModule,
+          ),
+      },
+    ],
   },
   { path: '**', redirectTo: '' },
 ];

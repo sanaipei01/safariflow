@@ -1,0 +1,79 @@
+<h2 class="title">Find a matatu</h2>
+
+<form [formGroup]="form" (ngSubmit)="search()" class="search-form" novalidate>
+  <div class="field">
+    <label for="from">From</label>
+    <p-select
+      inputId="from"
+      formControlName="from"
+      [options]="stages()"
+      [filter]="true"
+      filterPlaceholder="Type to search"
+      placeholder="Choose a stage"
+    />
+  </div>
+
+  <p-button
+    icon="pi pi-arrow-right-arrow-left"
+    severity="secondary"
+    [outlined]="true"
+    ariaLabel="Swap From and To"
+    (onClick)="swap()"
+  />
+
+  <div class="field">
+    <label for="to">To</label>
+    <p-select
+      inputId="to"
+      formControlName="to"
+      [options]="stages()"
+      [filter]="true"
+      filterPlaceholder="Type to search"
+      placeholder="Choose a stage"
+    />
+  </div>
+
+  <p-button type="submit" label="Search" icon="pi pi-search" [loading]="loading()" />
+</form>
+
+@if (recent().length) {
+  <div class="recent">
+    <span>Recent</span>
+    @for (item of recent(); track item.from + item.to) {
+      <p-button
+        [label]="item.from + ' to ' + item.to"
+        severity="secondary"
+        [text]="true"
+        size="small"
+        (onClick)="useRecent(item)"
+      />
+    }
+  </div>
+}
+
+@if (errorMessage(); as message) {
+  <p-message severity="error" role="alert">{{ message }}</p-message>
+}
+
+@if (matches(); as found) {
+  @if (found.length) {
+    @for (match of found; track match.routeId) {
+      <p-card>
+        <div class="match-header">
+          <strong>{{ match.routeName }}</strong>
+          <p-tag [value]="match.stops.length + ' stages'" severity="secondary" />
+        </div>
+        <ol class="stops">
+          @for (stop of match.stops; track $index) {
+            <li [class.end]="$first || $last">{{ stop }}</li>
+          }
+        </ol>
+      </p-card>
+    }
+  } @else {
+    <p-message severity="info">
+      No route runs from {{ searched()?.from }} to {{ searched()?.to }}. Check the direction or try
+      a nearby stage.
+    </p-message>
+  }
+}
