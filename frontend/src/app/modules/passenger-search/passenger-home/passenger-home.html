@@ -1,0 +1,50 @@
+<section class="hero">
+  <p class="greeting">{{ greeting }}</p>
+  <h1>Where are you going?</h1>
+</section>
+
+<form class="card" [formGroup]="form" (ngSubmit)="search()" novalidate>
+  <div class="row">
+    <i class="pi pi-circle" aria-hidden="true"></i>
+    <p-select
+      inputId="from"
+      formControlName="from"
+      [options]="stages()"
+      [filter]="true"
+      filterPlaceholder="Type to search"
+      placeholder="Leaving from"
+      ariaLabel="Leaving from"
+    />
+  </div>
+  <div class="row">
+    <i class="pi pi-map-marker" aria-hidden="true"></i>
+    <p-select
+      inputId="to"
+      formControlName="to"
+      [options]="stages()"
+      [filter]="true"
+      filterPlaceholder="Type to search"
+      placeholder="Going to"
+      ariaLabel="Going to"
+    />
+  </div>
+
+  @if (errorMessage(); as message) {
+    <p-message severity="error" role="alert">{{ message }}</p-message>
+  }
+
+  <p-button type="submit" label="Find a matatu" icon="pi pi-search" styleClass="full" />
+</form>
+
+@if (recent.length) {
+  <section class="recent">
+    <h2>Recent searches</h2>
+    @for (item of recent; track item.from + item.to) {
+      <button type="button" class="recent-item" (click)="open(item)">
+        <i class="pi pi-history" aria-hidden="true"></i>
+        <span>{{ item.from }} to {{ item.to }}</span>
+        <i class="pi pi-angle-right" aria-hidden="true"></i>
+      </button>
+    }
+  </section>
+}
