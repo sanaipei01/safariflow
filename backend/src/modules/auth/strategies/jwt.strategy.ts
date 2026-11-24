@@ -5,12 +5,14 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { JwtPayload } from '../../../common/interfaces/jwt-payload.interface';
 import { User } from '../../users/entities/user.entity';
 import { UsersService } from '../../users/users.service';
+import { SessionsService } from '../sessions.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     config: ConfigService,
     private readonly usersService: UsersService,
+    private readonly sessions: SessionsService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -22,6 +24,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   // Loading the user on every request means a deactivated account or a
   // changed role takes effect immediately, not when the token expires.
   async validate(payload: JwtPayload): Promise<User> {
+    // a token is only good while its login is open: logging out or being replaced ends it
+    if (!this.sessions.isActive(payload.sid)) {
+      throw new UnauthorizedException();
+    }
     const user = await this.usersService.findById(payload.sub);
     if (!user || !user.isActive) {
       throw new UnauthorizedException();

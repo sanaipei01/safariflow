@@ -8,8 +8,14 @@
   <div class="form-field">
     <label for="email">Email</label>
     <input id="email" type="email" formControlName="email" autocomplete="email" />
-    @if (form.controls.email.touched && form.controls.email.invalid) {
-      <p class="field-error" role="alert">Enter a valid email address.</p>
+    @if (form.controls.email.touched && form.controls.email.errors) {
+      <p class="field-error" role="alert">
+        {{
+          form.controls.email.hasError('required')
+            ? 'Enter your email address.'
+            : 'Enter a valid email address, for example name@example.com.'
+        }}
+      </p>
     }
   </div>
 

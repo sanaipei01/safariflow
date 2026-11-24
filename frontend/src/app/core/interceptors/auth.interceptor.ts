@@ -4,7 +4,7 @@ import { catchError, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../services/auth.service';
 
-const AUTH_URLS = ['/auth/login', '/auth/register'];
+const AUTH_URLS = ['/auth/login', '/auth/register', '/auth/logout'];
 
 export const authInterceptor: HttpInterceptorFn = (request, next) => {
   const auth = inject(AuthService);

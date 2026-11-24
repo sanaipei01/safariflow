@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { getErrorMessage } from '../../../core/utils/http-error';
+import { EMAIL_PATTERN } from '../../../core/utils/password-rules';
 
 @Component({
   selector: 'app-login',
@@ -17,7 +18,7 @@ export class Login {
   private readonly router = inject(Router);
 
   protected readonly form = this.formBuilder.group({
-    email: ['', [Validators.required, Validators.email]],
+    email: ['', [Validators.required, Validators.pattern(EMAIL_PATTERN)]],
     password: ['', Validators.required],
   });
   protected readonly loading = signal(false);
