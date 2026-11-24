@@ -92,6 +92,28 @@ describe('MatatusService', () => {
     });
   });
 
+  describe('ensureForVehicle', () => {
+    it('adds a vehicle that is not in the list yet', async () => {
+      const created = await service.ensureForVehicle('KCB 456B', 14, SACCO_ID);
+
+      expect(created).toMatchObject({ plateNumber: 'KCB 456B', capacity: 14 });
+      expect(matatus).toHaveLength(2);
+    });
+
+    it('reuses the matatu that already has this plate', async () => {
+      const found = await service.ensureForVehicle('KDA 123A', 14, SACCO_ID);
+
+      expect(found.capacity).toBe(33);
+      expect(matatus).toHaveLength(1);
+    });
+
+    it('does not add a vehicle under a SACCO that does not exist', async () => {
+      await expect(
+        service.ensureForVehicle('KCB 456B', 14, 99),
+      ).rejects.toThrow(BadRequestException);
+    });
+  });
+
   describe('update', () => {
     it('changes only the fields that were sent', async () => {
       const updated = await service.update(1, { capacity: 25 });

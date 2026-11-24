@@ -61,8 +61,10 @@ describe('DriverService', () => {
   });
 
   it('approves and rejects with PATCH requests', () => {
-    service.approve(4).subscribe();
-    expect(http.expectOne(`${DRIVERS_URL}/4/approve`).request.method).toBe('PATCH');
+    service.approve(4, 2).subscribe();
+    const approve = http.expectOne(`${DRIVERS_URL}/4/approve`);
+    expect(approve.request.method).toBe('PATCH');
+    expect(approve.request.body).toEqual({ saccoId: 2 });
 
     service.reject(4, 'Blurry photo').subscribe();
     const reject = http.expectOne(`${DRIVERS_URL}/4/reject`);

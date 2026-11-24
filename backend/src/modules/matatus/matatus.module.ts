@@ -9,5 +9,6 @@ import { MatatusService } from './matatus.service';
   imports: [TypeOrmModule.forFeature([Matatu, Sacco])],
   controllers: [MatatusController],
   providers: [MatatusService],
+  exports: [MatatusService],
 })
 export class MatatusModule {}

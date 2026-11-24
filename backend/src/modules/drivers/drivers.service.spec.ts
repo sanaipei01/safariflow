@@ -1,5 +1,10 @@
-import { ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { Repository } from 'typeorm';
+import { MatatusService } from '../matatus/matatus.service';
 import { DriversService } from './drivers.service';
 import { DriverDetails } from './dto/save-driver.dto';
 import { Driver } from './entities/driver.entity';
@@ -40,6 +45,7 @@ type Condition = Partial<Driver>;
 
 describe('DriversService', () => {
   let drivers: Driver[];
+  let addedVehicles: unknown[][];
   let service: DriversService;
 
   const matches = (driver: Driver, condition: Condition) =>
@@ -49,6 +55,7 @@ describe('DriversService', () => {
 
   beforeEach(() => {
     drivers = [buildDriver()];
+    addedVehicles = [];
 
     // A minimal in-memory stand-in for the TypeORM repository.
     const driversRepository = {
@@ -74,7 +81,16 @@ describe('DriversService', () => {
       },
     } as unknown as Repository<Driver>;
 
-    service = new DriversService(driversRepository);
+    const matatusService = {
+      ensureForVehicle: async (...vehicle: unknown[]) => {
+        if (vehicle[2] === 99) {
+          throw new BadRequestException('The selected SACCO does not exist');
+        }
+        addedVehicles.push(vehicle);
+      },
+    } as unknown as MatatusService;
+
+    service = new DriversService(driversRepository, matatusService);
   });
 
   const otherDriver = (overrides: Partial<Driver>) =>
@@ -157,10 +173,17 @@ describe('DriversService', () => {
   });
 
   describe('approve and reject', () => {
-    it('approves a pending registration', async () => {
-      const driver = await service.approve(1);
+    it('approves a pending registration and adds its vehicle under the chosen Sacco', async () => {
+      const driver = await service.approve(1, 5);
 
       expect(driver.status).toBe(DriverStatus.APPROVED);
+      expect(addedVehicles).toEqual([['KDA 123A', 14, 5]]);
+    });
+
+    it('leaves the registration pending when the vehicle cannot be added', async () => {
+      await expect(service.approve(1, 99)).rejects.toThrow(BadRequestException);
+
+      expect(drivers[0].status).toBe(DriverStatus.PENDING);
     });
 
     it('rejects a pending registration and keeps the reason', async () => {
@@ -171,15 +194,17 @@ describe('DriversService', () => {
     });
 
     it('does not decide a registration twice', async () => {
-      await service.approve(1);
+      await service.approve(1, 5);
 
       await expect(service.reject(1, 'Changed my mind')).rejects.toThrow(
         ConflictException,
       );
+      await expect(service.approve(1, 5)).rejects.toThrow(ConflictException);
+      expect(addedVehicles).toHaveLength(1);
     });
 
     it('fails for a driver that does not exist', async () => {
-      await expect(service.approve(99)).rejects.toThrow(NotFoundException);
+      await expect(service.approve(99, 5)).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -207,7 +232,7 @@ describe('DriversService', () => {
     });
 
     it('does not let an approved driver change their details', async () => {
-      await service.approve(1);
+      await service.approve(1, 5);
 
       await expect(service.updateMine(10, registration)).rejects.toThrow(
         ConflictException,

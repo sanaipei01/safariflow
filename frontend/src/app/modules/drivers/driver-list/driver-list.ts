@@ -7,7 +7,9 @@ import {
   Driver,
   DriverStatus,
 } from '../../../core/models/driver.model';
+import { Sacco } from '../../../core/models/sacco.model';
 import { DriverService } from '../../../core/services/driver.service';
+import { SaccoService } from '../../../core/services/sacco.service';
 import { getErrorMessage } from '../../../core/utils/http-error';
 
 @Component({
@@ -17,6 +19,7 @@ import { getErrorMessage } from '../../../core/utils/http-error';
 })
 export class DriverList implements OnInit {
   private readonly driverService = inject(DriverService);
+  private readonly saccoService = inject(SaccoService);
 
   protected readonly statusOptions = DRIVER_STATUS_OPTIONS;
   protected readonly drivers = signal<Driver[]>([]);
@@ -25,6 +28,9 @@ export class DriverList implements OnInit {
 
   /** The registration open in the review pop-up, if any. */
   protected readonly reviewing = signal<Driver | null>(null);
+  /** The Sacco a driver's vehicle is added to on approval. It starts as the one the driver named. */
+  protected readonly saccos = signal<Sacco[]>([]);
+  protected readonly saccoId = signal<number | null>(null);
   /** True while the operator is typing the reason for a rejection. */
   protected readonly rejecting = signal(false);
   protected readonly reason = new FormControl('', {
@@ -53,7 +59,11 @@ export class DriverList implements OnInit {
     this.errorMessage.set(null);
     this.rejecting.set(false);
     this.reason.reset();
+    this.saccoId.set(this.matchingSacco(driver));
     this.reviewing.set(driver);
+    if (driver.status === 'pending' && !this.saccos().length) {
+      this.loadSaccos(driver);
+    }
   }
 
   protected closeReview(): void {
@@ -61,7 +71,10 @@ export class DriverList implements OnInit {
   }
 
   protected approve(driver: Driver): void {
-    this.decide(this.driverService.approve(driver.id));
+    const saccoId = this.saccoId();
+    if (saccoId !== null) {
+      this.decide(this.driverService.approve(driver.id, saccoId));
+    }
   }
 
   protected startReject(): void {
@@ -78,6 +91,25 @@ export class DriverList implements OnInit {
       return;
     }
     this.decide(this.driverService.reject(driver.id, this.reason.value.trim()));
+  }
+
+  private loadSaccos(driver: Driver): void {
+    this.saccoService.list().subscribe({
+      next: (saccos) => {
+        this.saccos.set(saccos);
+        this.saccoId.set(this.matchingSacco(driver));
+      },
+      error: (error: unknown) => this.errorMessage.set(getErrorMessage(error)),
+    });
+  }
+
+  private matchingSacco(driver: Driver): number | null {
+    const sacco = this.saccos().find(
+      (item) =>
+        item.registrationNumber === driver.saccoRegistrationNumber ||
+        item.name.toLowerCase() === driver.saccoName?.toLowerCase(),
+    );
+    return sacco?.id ?? null;
   }
 
   private decide(request: Observable<Driver>): void {

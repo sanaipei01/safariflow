@@ -15,6 +15,7 @@ import { Role } from '../../common/enums/role.enum';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { User } from '../users/entities/user.entity';
+import { ApproveDriverDto } from './dto/approve-driver.dto';
 import { ListDriversQueryDto } from './dto/list-drivers-query.dto';
 import { RejectDriverDto } from './dto/reject-driver.dto';
 import { SaveDriverDto } from './dto/save-driver.dto';
@@ -58,8 +59,11 @@ export class DriversController {
 
   @Patch(':id/approve')
   @Roles(Role.ADMIN, Role.OPERATOR)
-  approve(@Param('id', ParseIntPipe) id: number): Promise<Driver> {
-    return this.driversService.approve(id);
+  approve(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: ApproveDriverDto,
+  ): Promise<Driver> {
+    return this.driversService.approve(id, dto.saccoId);
   }
 
   @Patch(':id/reject')

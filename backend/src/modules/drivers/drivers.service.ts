@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsRelations, Repository } from 'typeorm';
+import { MatatusService } from '../matatus/matatus.service';
 import { ListDriversQueryDto } from './dto/list-drivers-query.dto';
 import { DriverDetails, SaveDriverDto } from './dto/save-driver.dto';
 import { Driver } from './entities/driver.entity';
@@ -27,6 +28,7 @@ export class DriversService {
   constructor(
     @InjectRepository(Driver)
     private readonly driversRepository: Repository<Driver>,
+    private readonly matatusService: MatatusService,
   ) {}
 
   async register(userId: number, dto: SaveDriverDto): Promise<Driver> {
@@ -87,11 +89,19 @@ export class DriversService {
     return driver;
   }
 
-  approve(id: number): Promise<Driver> {
+  /** Approving adds the driver's vehicle to the Matatus list under the chosen Sacco. */
+  async approve(id: number, saccoId: number): Promise<Driver> {
+    const driver = await this.findPending(id);
+    await this.matatusService.ensureForVehicle(
+      driver.vehiclePlate,
+      driver.vehicleCapacity,
+      saccoId,
+    );
     return this.decide(id, { status: DriverStatus.APPROVED });
   }
 
-  reject(id: number, reason: string): Promise<Driver> {
+  async reject(id: number, reason: string): Promise<Driver> {
+    await this.findPending(id);
     return this.decide(id, {
       status: DriverStatus.REJECTED,
       rejectionReason: reason,
@@ -99,14 +109,18 @@ export class DriversService {
   }
 
   /** Only a pending application can be decided, so a decision is never silently overwritten. */
-  private async decide(
-    id: number,
-    changes: Pick<Driver, 'status'> & Partial<Pick<Driver, 'rejectionReason'>>,
-  ): Promise<Driver> {
+  private async findPending(id: number): Promise<Driver> {
     const driver = await this.findOne(id);
     if (driver.status !== DriverStatus.PENDING) {
       throw new ConflictException(`This driver is already ${driver.status}`);
     }
+    return driver;
+  }
+
+  private async decide(
+    id: number,
+    changes: Pick<Driver, 'status'> & Partial<Pick<Driver, 'rejectionReason'>>,
+  ): Promise<Driver> {
     await this.driversRepository.update(id, {
       rejectionReason: null,
       ...changes,

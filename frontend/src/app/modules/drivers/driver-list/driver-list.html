@@ -78,6 +78,29 @@
 
     <app-driver-details [driver]="driver" />
 
+    @if (driver.status === 'pending' && !rejecting()) {
+      <div class="field approve-sacco">
+        <label for="approve-sacco">Add the vehicle to this Sacco</label>
+        <p-select
+          inputId="approve-sacco"
+          [options]="saccos()"
+          optionLabel="name"
+          optionValue="id"
+          [filter]="true"
+          placeholder="Choose a Sacco"
+          appendTo="body"
+          [ngModel]="saccoId()"
+          (ngModelChange)="saccoId.set($event)"
+          fluid
+        />
+        @if (!saccos().length) {
+          <p-message severity="info" size="small" variant="simple">
+            There are no Saccos yet. Add one on the Saccos page first.
+          </p-message>
+        }
+      </div>
+    }
+
     @if (rejecting()) {
       <div class="field reject-reason">
         <label for="reject-reason">Reason for rejecting {{ driver.user.name }}</label>
@@ -113,7 +136,12 @@
           [outlined]="true"
           (onClick)="startReject()"
         />
-        <p-button label="Approve" icon="pi pi-check" (onClick)="approve(driver)" />
+        <p-button
+          label="Approve"
+          icon="pi pi-check"
+          [disabled]="saccoId() === null"
+          (onClick)="approve(driver)"
+        />
       }
     }
   </ng-template>

@@ -30,6 +30,16 @@ export class MatatusService {
     return this.findOne(matatu.id);
   }
 
+  /** The matatu with this plate, added under the Sacco if it is not in the list yet. */
+  async ensureForVehicle(
+    plateNumber: string,
+    capacity: number,
+    saccoId: number,
+  ): Promise<Matatu> {
+    const existing = await this.matatusRepository.findOneBy({ plateNumber });
+    return existing ?? this.create({ plateNumber, capacity, saccoId });
+  }
+
   findAll(filters: ListMatatusQueryDto): Promise<Matatu[]> {
     const where: FindOptionsWhere<Matatu> = {};
     if (filters.saccoId) {

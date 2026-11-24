@@ -12,6 +12,15 @@ import { DriverList } from './driver-list';
 
 const DRIVERS_URL = `${environment.apiUrl}/drivers`;
 const PENDING_URL = `${DRIVERS_URL}?status=pending`;
+const SACCOS_URL = `${environment.apiUrl}/saccos`;
+
+const superMetro = {
+  id: 5,
+  name: 'Super Metro',
+  registrationNumber: 'SAC/001',
+  phone: null,
+};
+const metroTrans = { id: 6, name: 'Metro Trans', registrationNumber: 'SAC/002', phone: null };
 
 describe('DriverList', () => {
   let fixture: ComponentFixture<DriverList>;
@@ -42,8 +51,12 @@ describe('DriverList', () => {
       (item) => item.textContent?.trim() === label,
     )!;
 
-  async function openReview(label = 'Review'): Promise<void> {
+  /** A pending registration loads the Saccos for the pop-up, so they are answered here. */
+  async function openReview(label = 'Review', saccos: object[] = [superMetro]): Promise<void> {
     button(label).click();
+    if (label === 'Review') {
+      http.expectOne(SACCOS_URL).flush(saccos);
+    }
     await fixture.whenStable();
   }
 
@@ -100,12 +113,33 @@ describe('DriverList', () => {
     button('Approve').click();
     const approve = http.expectOne(`${DRIVERS_URL}/1/approve`);
     expect(approve.request.method).toBe('PATCH');
+    expect(approve.request.body).toEqual({ saccoId: 5 });
     approve.flush(buildDriver({ status: 'approved' }));
 
     http.expectOne(DRIVERS_URL).flush([buildDriver({ status: 'approved' })]);
     http.expectOne(PENDING_URL).flush([]);
     await fixture.whenStable();
     expect(page.querySelector('.p-tag')?.textContent).toContain('Approved');
+  });
+
+  it('picks the Sacco the driver named and asks for one when none matches', async () => {
+    await render([buildDriver({ saccoName: 'Unknown Sacco', saccoRegistrationNumber: null })]);
+    await openReview('Review', [superMetro, metroTrans]);
+
+    expect(button('Approve').disabled).toBe(true);
+    button('Approve').click();
+    http.expectNone(`${DRIVERS_URL}/1/approve`);
+
+    const select = fixture.debugElement.queryAll(By.directive(Select))[1];
+    select.triggerEventHandler('ngModelChange', 6);
+    await fixture.whenStable();
+    button('Approve').click();
+
+    const approve = http.expectOne(`${DRIVERS_URL}/1/approve`);
+    expect(approve.request.body).toEqual({ saccoId: 6 });
+    approve.flush(buildDriver({ status: 'approved' }));
+    http.expectOne(DRIVERS_URL).flush([]);
+    http.expectOne(PENDING_URL).flush([]);
   });
 
   it('asks for a reason before rejecting and sends it', async () => {

@@ -33,8 +33,9 @@ export class DriverService {
     return this.http.get<Driver[]>(this.url, { params });
   }
 
-  approve(id: number): Observable<Driver> {
-    return this.http.patch<Driver>(`${this.url}/${id}/approve`, {});
+  /** Approving adds the driver's vehicle to the Matatus list under this Sacco. */
+  approve(id: number, saccoId: number): Observable<Driver> {
+    return this.http.patch<Driver>(`${this.url}/${id}/approve`, { saccoId });
   }
 
   reject(id: number, reason: string): Observable<Driver> {
