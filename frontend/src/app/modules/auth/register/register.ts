@@ -1,10 +1,16 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 import { RegisterRequest } from '../../../core/models/auth.model';
 import { AuthService } from '../../../core/services/auth.service';
 import { getErrorMessage } from '../../../core/utils/http-error';
+import {
+  EMAIL_PATTERN,
+  PASSWORD_RULES,
+  passwordRulesValidator,
+} from '../../../core/utils/password-rules';
 
 @Component({
   selector: 'app-register',
@@ -19,11 +25,20 @@ export class Register {
 
   protected readonly form = this.formBuilder.group({
     name: ['', [Validators.required, Validators.maxLength(100)]],
-    email: ['', [Validators.required, Validators.email]],
+    email: [
+      '',
+      [Validators.required, Validators.pattern(EMAIL_PATTERN), Validators.maxLength(254)],
+    ],
     phone: ['', Validators.maxLength(20)],
-    password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(72)]],
+    password: ['', [Validators.required, passwordRulesValidator]],
     role: ['passenger' as RegisterRequest['role']],
   });
+  private readonly password = toSignal(this.form.controls.password.valueChanges, {
+    initialValue: '',
+  });
+  protected readonly passwordRules = computed(() =>
+    PASSWORD_RULES.map((rule) => ({ label: rule.label, met: rule.isMet(this.password()) })),
+  );
   protected readonly loading = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
 

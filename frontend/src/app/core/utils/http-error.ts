@@ -12,5 +12,9 @@ export function getErrorMessage(error: unknown): string {
   if (Array.isArray(message)) {
     return message[0];
   }
+  // technical message from the general rate limit
+  if (error.status === 429 && message?.startsWith('ThrottlerException')) {
+    return 'Too many requests. Please wait a moment and try again.';
+  }
   return message ?? 'Something went wrong. Please try again.';
 }

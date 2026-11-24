@@ -11,10 +11,10 @@ const TOKEN_KEY = 'safariflow.token';
 const USER_KEY = 'safariflow.user';
 
 const ROLE_HOME: Record<Role, string> = {
-  [Role.ADMIN]: '/admin',
-  [Role.OPERATOR]: '/admin',
-  [Role.DRIVER]: '/driver',
-  [Role.PASSENGER]: '/passenger',
+  admin: '/admin',
+  operator: '/admin',
+  driver: '/driver',
+  passenger: '/passenger',
 };
 
 @Injectable({ providedIn: 'root' })
@@ -45,6 +45,8 @@ export class AuthService {
   }
 
   logout(): void {
+    // lets the server free this login
+    this.http.post(`${environment.apiUrl}/auth/logout`, {}).subscribe({ error: () => undefined });
     this.storage.remove(TOKEN_KEY);
     this.storage.remove(USER_KEY);
     this.currentUser.set(null);

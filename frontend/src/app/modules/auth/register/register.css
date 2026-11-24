@@ -1,0 +1,27 @@
+.password-rules {
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+}
+
+.password-rules li {
+  padding-left: 1.25rem;
+  position: relative;
+}
+
+.password-rules li::before {
+  content: '-';
+  position: absolute;
+  left: 0.25rem;
+}
+
+.password-rules li.met {
+  color: var(--accent);
+}
+
+.password-rules li.met::before {
+  content: '\2713';
+  left: 0;
+}

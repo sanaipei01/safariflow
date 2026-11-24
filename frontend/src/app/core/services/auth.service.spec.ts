@@ -61,6 +61,7 @@ describe('AuthService', () => {
 
     auth.logout();
 
+    http.expectOne(`${environment.apiUrl}/auth/logout`).flush(null);
     expect(auth.isLoggedIn()).toBe(false);
     expect(auth.token).toBeNull();
   });
